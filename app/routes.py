@@ -1,7 +1,7 @@
 from app import app
 import psycopg
-from flask import render_template
-from flask import request
+from flask import render_template, url_for
+from flask import request, flash, redirect
 from forms import RegistrationForm
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -17,15 +17,13 @@ def register():
 
     if reg_form.validate_on_submit():
         # enter user info to DB
+        print(app.config['DB_SERVER'])
         with psycopg.connect(host=app.config['DB_SERVER'],
                              user=app.config['DB_USER'],
                              password=app.config['DB_PASSWORD'],
                              dbname=app.config['DB_NAME']) as con:
             cur = con.cursor()
 
-            # data = cur.fetchall()
-
-            ID = 1
             password_hash = generate_password_hash(request.form['password'])
 
             cur.execute(
@@ -44,8 +42,9 @@ def register():
 
             con.commit()
 
-        return 'Регистрация успешна'
-    return render_template('registration.html', title='регистрация', form=reg_form)
+            flash('Вы успешно зарегистрированы', 'success')
+            return redirect(url_for('register'))
+    return render_template('registration.html', title='Регистрация', form=reg_form)
 
 
 @app.route('/testdb')

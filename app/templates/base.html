@@ -1,4 +1,5 @@
 {% from 'bootstrap5/nav.html' import render_nav_item %}
+{% from 'bootstrap5/utils.html' import render_messages %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -15,7 +16,7 @@
         {% endif %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
             <div class="container-fluid">
                 <div class="navbar-nav">
                     {{ render_nav_item('index', 'Главная') }}
@@ -25,6 +26,8 @@
                 </div>
             </div>
         </nav>
+        <br></br>
+        {{ render_messages() }}
         {% block content %}{% endblock %}
         {% block scripts %}
             {{ bootstrap.load_js() }}
