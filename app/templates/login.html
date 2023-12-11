@@ -7,13 +7,10 @@
 		<form method="POST" action="">
 			{{ form.hidden_tag() }}
 			{{ render_field(form.username, class="form-control form-control-lg") }}
-	        {{ render_field(form.email, placeholder="name@example.com") }}
 	        {{ render_field(form.password) }}
-	        {{ render_field(form.confirm) }}
-	        {{ render_field(form.birth_date) }}
-	        {{ render_field(form.region_code) }}
-	        {{ render_field(form.want_spam) }}
-			<input type="submit" value="Зарегистрироваться">
+			<input type="submit" value="Войти">
 		</form>
+		<hr align="left" width="200px">
+		<a class="button" href="/register">Зарегистрироваться</a>
 	</div>
 {% endblock %}

@@ -16,3 +16,11 @@ class RegistrationForm(FlaskForm):
     birth_date = DateField('Дата рождения', [validators.InputRequired()], '%Y-%m-%d')
     region_code = IntegerField('Код региона', [validators.InputRequired()])
     want_spam = BooleanField('Я согласен получать рекламную рассылку', [validators.InputRequired()])
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Имя пользователя', [validators.Length(min=4, max=25), validators.InputRequired()])
+    password = PasswordField('Пароль', [
+        validators.InputRequired(),
+        validators.Length(min=6, max=100),
+    ])

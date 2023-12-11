@@ -18,15 +18,15 @@
     <body>
         <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
             <div class="container-fluid">
-                <div class="navbar-nav">
-                    {{ render_nav_item('index', 'Главная') }}
-                    {{ render_nav_item('test_connection', 'Проверить подключение') }}
-                    {{ render_nav_item('show_clients', 'Отели') }}
-                    {{ render_nav_item('register', 'Регистрация') }}
+                    <div class="navbar-nav">
+                        {{ render_nav_item('index', 'Главная') }}
+                        {{ render_nav_item('test_connection', 'Проверить подключение') }}
+                        {{ render_nav_item('show_clients', 'Отели') }}
+                        <!-- {{ render_nav_item('login', 'Войти') }} -->
+                    <a class="btn btn-light" href="/login" role="button" style = "position:relative; left:15px;">Войти</a>
                 </div>
             </div>
         </nav>
-        <br></br>
         {{ render_messages() }}
         {% block content %}{% endblock %}
         {% block scripts %}
