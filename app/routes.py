@@ -1,7 +1,7 @@
 from app import app, db
 import psycopg
 from flask import render_template, url_for, request, flash, redirect
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, logout_user
 from forms import RegistrationForm, LoginForm
 from user import User
 from werkzeug.security import check_password_hash
@@ -32,15 +32,21 @@ def login():
     return render_template('login.html', title='Авторизация', form=login_form)
 
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     reg_form = RegistrationForm()
 
     if reg_form.validate_on_submit():
         # enter user info to DB
-            db.addUser(request)
+            msg = db.addUser(request)
 
-            flash('Вы успешно зарегистрированы', 'success')
+            flash(msg, 'primary')
             return redirect(url_for('login'))
     return render_template('registration.html', title='Регистрация', form=reg_form)
 

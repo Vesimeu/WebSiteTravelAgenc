@@ -43,6 +43,13 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
+            res = cur.execute('SELECT * FROM "user" WHERE login = %s or email = %s',
+                              [request.form['username'], request.form['email']]).fetchone()
+
+            if res:
+                message = "Пользователь с такими данными уже зарегистрирован"
+                return message
+
             password_hash = generate_password_hash(request.form['password'])
 
             cur.execute(
@@ -53,7 +60,17 @@ class DBInterface():
                 'region_code,'
                 'want_spam,'
                 'date_of_birth) VALUES (%s, %s, %s, %s, %s, %s)',
-                [request.form['username'], request.form['email'], password_hash, request.form['region_code'],
-                 request.form['want_spam'], request.form['birth_date']])
+                [
+                    request.form['username'],
+                    request.form['email'],
+                    password_hash, request.form['region_code'],
+                    request.form['want_spam'],
+                    request.form['birth_date']
+                ]
+            )
 
             con.commit()
+
+            message = "Пользователь успешно зарегистрирован"
+
+        return message

@@ -9,9 +9,9 @@
 			{{ render_field(form.username, class="form-control form-control-lg") }}
 	        {{ render_field(form.password) }}
 	        {{ render_field(form.remember_me)}}
-			<input type="submit" value="Войти">
+			<input class="btn btn-outline-success" type="submit" value="Войти">
 		</form>
 		<hr align="left" width="200px">
-		<a class="button" href="/register">Зарегистрироваться</a>
+		<a class="btn btn-outline-info" href="/register" role="button">Зарегистрироваться</a>
 	</div>
 {% endblock %}
