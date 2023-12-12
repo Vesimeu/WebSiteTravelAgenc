@@ -1,6 +1,6 @@
 from dbInterface import DBInterface
 from app import login_manager
-from flask_login import UserMixin
+from flask_login import UserMixin, logout_user
 
 
 class User(UserMixin):
@@ -12,8 +12,11 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(id):
-    db = DBInterface()
+    try:
+        db = DBInterface()
 
-    login, password = db.getUserLogPassByID(id)
+        login, password = db.getUserLogPassByID(id)
 
-    return User(id, login, password)
+        return User(id, login, password)
+    except:
+        return None

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, DateField, IntegerField, PasswordField, validators
+from wtforms import BooleanField, StringField, DateField, IntegerField, PasswordField, SelectField, validators
 
 
 class RegistrationForm(FlaskForm):
@@ -13,7 +13,6 @@ class RegistrationForm(FlaskForm):
     ])
 
     confirm = PasswordField('Повторите пароль')
-    birth_date = DateField('Дата рождения', [validators.InputRequired()], '%Y-%m-%d')
     region_code = IntegerField('Код региона', [validators.InputRequired()])
     want_spam = BooleanField('Я согласен получать рекламную рассылку', [validators.InputRequired()])
 
@@ -25,3 +24,13 @@ class LoginForm(FlaskForm):
         validators.Length(min=6, max=100),
     ])
     remember_me = BooleanField('Запомнить меня')
+
+
+class ContractForm(FlaskForm):
+    full_name = StringField('ФИО клиента', [validators.InputRequired()])
+    birth_date = DateField('Дата рождения', format='%Y-%m-%d', validators=[validators.InputRequired()])
+    address = StringField('Адрес', [validators.InputRequired()])
+    phone_number = StringField('Номер телефона', [validators.Length(min=6, max=12), validators.InputRequired()])
+    payment_method = SelectField('Способ оплаты', choices=[('bank_card', 'Банковская карта'), ('cash', 'Наличные')],
+                                 validate_choice=True)
+    agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])

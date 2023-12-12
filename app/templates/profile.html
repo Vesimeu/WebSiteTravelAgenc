@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="position:absolute; left: 25px;">
+	<h2>Профиль пользователя {{ current_user.login }}</h2>
+	{% if user_client %}
+		<a>ФИО: {{ user_client[0][3] }}</a>
+		<br>
+		<a>Номер телефона: {{ user_client[0][2] }}</h3>	
+		<br>
+		<a>Адрес: {{ user_client[0][4] }}</a>	
+		<br>
+	{% else %}
+		<a>Профиль пока пуст</a>
+		<br>
+	{% endif %}
+	<input class="btn btn-outline-success" type="submit" value="Редактировать профиль">
+</div>
+
+{% endblock %}
