@@ -24,3 +24,4 @@ class LoginForm(FlaskForm):
         validators.InputRequired(),
         validators.Length(min=6, max=100),
     ])
+    remember_me = BooleanField('Запомнить меня')

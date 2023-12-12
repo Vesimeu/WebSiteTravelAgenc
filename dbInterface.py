@@ -4,16 +4,16 @@ from config import Config
 
 
 class DBInterface():
-    def getUserInfo(self, user_id):
+    def getUserLogPassByID(self, user_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT * FROM "user" WHERE ID = %s LIMIT 1', [user_id])
+            cur.execute('SELECT login, password FROM "user" WHERE ID = %s', [user_id])
 
-            result = cur.fetchall()
+            result = cur.fetchone()
 
             if not result:
                 print('Пользователь не найден')
@@ -27,9 +27,9 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT * FROM "user" WHERE login = %s LIMIT 1', [login])
+            cur.execute('SELECT ID, login, password FROM "user" WHERE login = %s', [login])
 
-            result = cur.fetchall()
+            result = cur.fetchone()
 
             if not result:
                 print('Пользователь не найден')

@@ -1,18 +1,10 @@
-from app import app, login_manager, login_user, db
+from app import app, db
 import psycopg
-from flask import render_template, url_for
-from flask import request, flash, redirect
+from flask import render_template, url_for, request, flash, redirect
+from flask_login import current_user, login_user
 from forms import RegistrationForm, LoginForm
-from userLogin import UserLogin
+from user import User
 from werkzeug.security import check_password_hash
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    print("load_user")
-    print(user_id)
-
-    return UserLogin().fromDb(user_id, db)
 
 
 @app.route('/')
@@ -25,15 +17,17 @@ def login():
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
-        user = db.getUserByLogin(request.form['username'])
+        res = db.getUserByLogin(request.form['username'])
 
-        if user and check_password_hash(user[0][3], request.form['password']):
-            userLogin = UserLogin().create(user)
-            login_user(userLogin)
+        if res is None or not check_password_hash(res[2], request.form['password']):
+            flash('Неудачная попытка входа', 'error')
+            return redirect(url_for('login'))
 
-            flash('Вы успешно авторизованы', 'success')
-            return redirect(url_for('index'))
-        flash('Пароль/имя пользователя введены неверно', 'error')
+        ID, login, password = res
+        user = User(ID, login, password)
+        login_user(user, remember=login_form.remember_me.data)
+        flash(f'Вы успешно авторизованы, {current_user.login}', 'success')
+        return redirect(url_for('index'))
 
     return render_template('login.html', title='Авторизация', form=login_form)
 

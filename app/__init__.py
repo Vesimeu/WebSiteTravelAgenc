@@ -2,7 +2,7 @@ from flask import Flask
 from config import Config
 from dbInterface import DBInterface
 from flask_bootstrap import Bootstrap5
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager
 
 app = Flask(__name__)
 
