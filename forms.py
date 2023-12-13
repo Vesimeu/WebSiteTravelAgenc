@@ -26,11 +26,11 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Запомнить меня')
 
 
-class ContractForm(FlaskForm):
+class EditProfileForm(FlaskForm):
     full_name = StringField('ФИО клиента', [validators.InputRequired()])
     birth_date = DateField('Дата рождения', format='%Y-%m-%d', validators=[validators.InputRequired()])
     address = StringField('Адрес', [validators.InputRequired()])
     phone_number = StringField('Номер телефона', [validators.Length(min=6, max=12), validators.InputRequired()])
-    payment_method = SelectField('Способ оплаты', choices=[('bank_card', 'Банковская карта'), ('cash', 'Наличные')],
-                                 validate_choice=True)
-    agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])
+    # payment_method = SelectField('Способ оплаты', choices=[('bank_card', 'Банковская карта'), ('cash', 'Наличные')],
+    #                              validate_choice=True)
+    # agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])

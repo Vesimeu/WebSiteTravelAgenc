@@ -91,7 +91,10 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            user = self.getUserByLogin(current_user.login)
+            res = self.getUserClient()
+
+            if res:
+                print('Клиент уже существует')
 
             cur.execute('INSERT INTO client('
                         '"user_id",'
@@ -100,10 +103,37 @@ class DBInterface():
                         'address,'
                         'birth_date) VALUES (%s, %s, %s, %s, %s)',
                         [
-                            user[0],
+                            current_user.id,
                             request.form['phone_number'],
                             request.form['full_name'],
                             request.form['address'],
                             request.form['birth_date']
                         ]
                         )
+            print('Клиент добавлен')
+
+    def updateClient(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = self.getUserClient()
+
+            if not res:
+                print('Клиент не найден')
+                return
+
+            cur.execute('UPDATE client SET'
+                        ' phone_number = %s,'
+                        ' full_name = %s,'
+                        ' address = %s,'
+                        ' birth_date = %s WHERE "user_id" = %s', [
+                            request.form['phone_number'],
+                            request.form['full_name'],
+                            request.form['address'],
+                            request.form['birth_date'],
+                            current_user.id])
+
+            print('данные клиента обновлены')

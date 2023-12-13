@@ -5,9 +5,9 @@
 <div style="position:absolute; left: 25px;">
 	<div>
 		{% if current_user.is_authenticated %}
-			<h2> Добро пожаловать, {{ current_user.login }} ! </h2>
+			<p class="display-6"> Добро пожаловать, {{ current_user.login }} ! </p>
 		{% else %}
-			<h2> Добро пожаловать, гость ! </h2>
+			<p class="display-6"> Добро пожаловать, гость ! </p>
 		{% endif %}
 	</div>
 </div>

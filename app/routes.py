@@ -1,8 +1,8 @@
 from app import app, db
 import psycopg
 from flask import render_template, url_for, request, flash, redirect
-from flask_login import current_user, login_user, logout_user
-from forms import RegistrationForm, LoginForm, ContractForm
+from flask_login import current_user, login_user, logout_user, login_required
+from forms import RegistrationForm, LoginForm, EditProfileForm
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -55,22 +55,38 @@ def register():
 
 @app.route('/profile')
 def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     user_client = db.getUserClient()
     return render_template('profile.html', title='Мой профиль', user_client=user_client)
 
 
-@app.route('/conclude_contract', methods=['GET', 'POST'])
-def conclude_contract():
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
 
-    contract_form = ContractForm()
+    edit_profile_form = EditProfileForm()
+    client = db.getUserClient()
 
-    if contract_form.validate_on_submit():
+    if request.method == 'GET':
+        if client:
+            edit_profile_form.phone_number.data = client[0][2]
+            edit_profile_form.full_name.data = client[0][3]
+            edit_profile_form.address.data = client[0][4]
+            edit_profile_form.birth_date.data = client[0][5]
+
+    if edit_profile_form.validate_on_submit():
+        if client:
+            db.updateClient(request)
+        else:
             db.addClient(request)
-            flash('Контркат успешно заключен', 'success')
 
-    return render_template('contract.html', title='Заключить контркат', form=contract_form)
+        flash('Информация успешно обновлена', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template('edit_profile.html', title='Редактировать профиль', form=edit_profile_form)
 
 
 @app.route('/hotels')

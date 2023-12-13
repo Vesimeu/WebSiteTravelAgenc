@@ -3,16 +3,14 @@
 
 {% block content %}
 	<div class="container" style="max-width: 1000px;">
-		<h2>{{ title }}</h2>
+		<p class="display-6">{{ title }} </p>
 		<form method="POST" action="">
 			{{ form.hidden_tag() }}
 	        {{ render_field(form.full_name) }}
+	        {{ render_field(form.phone_number) }}
 	        {{ render_field(form.address) }}
 	       	{{ render_field(form.birth_date) }}
-	        {{ render_field(form.phone_number) }}
-	        {{ render_field(form.payment_method) }}
-	        {{ render_field(form.agreed_rules) }}
-			<input class="btn btn-outline-success" type="submit" value="Заключить контракт">
+			<input class="btn btn-outline-success" type="submit" value="Сохранить">
 		</form>
 	</div>
 {% endblock %}
