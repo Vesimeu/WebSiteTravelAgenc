@@ -12,7 +12,8 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT login, password FROM "user" WHERE ID = %s', [user_id])
+            cur.execute('SELECT login, password FROM "user" WHERE ID = %s',
+                        [user_id])
 
             result = cur.fetchone()
 
@@ -28,7 +29,8 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT ID, login, password FROM "user" WHERE login = %s', [login])
+            cur.execute('SELECT ID, login, password FROM "user" WHERE login = %s',
+                        [login])
 
             result = cur.fetchone()
 
@@ -48,8 +50,8 @@ class DBInterface():
                               [request.form['username'], request.form['email']]).fetchone()
 
             if res:
-                message = "Пользователь с такими данными уже зарегистрирован"
-                return message
+                print("Пользователь с такими данными уже зарегистрирован")
+                return False
 
             password_hash = generate_password_hash(request.form['password'])
 
@@ -71,17 +73,19 @@ class DBInterface():
             con.commit()
 
             message = "Пользователь успешно зарегистрирован"
-        return message
+        return True
 
-    def getUserClient(self):
+    def getCurrUserClient(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            user_client = cur.execute('SELECT * FROM client WHERE user_id = %s', [current_user.id]).fetchall()
-
+            user_client = cur.execute('SELECT * FROM client WHERE user_id = %s',
+                                      [current_user.id]).fetchone()
+        if not user_client:
+            return None
         return user_client
 
     def addClient(self, request):
@@ -91,7 +95,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            res = self.getUserClient()
+            res = self.getCurrUserClient()
 
             if res:
                 print('Клиент уже существует')
@@ -119,11 +123,11 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            res = self.getUserClient()
+            res = self.getCurrUserClient()
 
             if not res:
                 print('Клиент не найден')
-                return
+                return False
 
             cur.execute('UPDATE client SET'
                         ' phone_number = %s,'
@@ -136,4 +140,39 @@ class DBInterface():
                             request.form['birth_date'],
                             current_user.id])
 
-            print('данные клиента обновлены')
+            print('Данные клиента обновлены')
+            return True
+
+    def getRoutes(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+            res = cur.execute('SELECT * FROM route').fetchall()
+
+        if not res:
+            print('Туры не найдены')
+            return None
+        return res
+
+    def getCurrClientTrips(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+
+            client = self.getCurrUserClient()
+            if not client:
+                print('Клиент не найден')
+                return None
+
+            res = cur.execute('SELECT * FROM trip WHERE client_ID = %s', [client[0]]).fetchall()
+
+        if not res:
+            print('Путевки не найдены')
+            return None
+        return res

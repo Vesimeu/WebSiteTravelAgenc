@@ -9,7 +9,9 @@ from werkzeug.security import check_password_hash
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    routes = db.getRoutes()
+
+    return render_template('index.html', routes=routes, title='Доступные туры')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -46,9 +48,12 @@ def register():
     reg_form = RegistrationForm()
 
     if reg_form.validate_on_submit():
-        msg = db.addUser(request)
-
-        flash(msg, 'primary')
+        if not db.addUser(request):
+            flash('Неудачная попытка регистрации !'
+                  ' Пользователь с таким email/login уже зарегистрирован',
+                  'danger')
+            return redirect(url_for('register'))
+        flash('Пользователь успешно зарегистрирован', 'success')
         return redirect(url_for('login'))
     return render_template('registration.html', title='Регистрация', form=reg_form)
 
@@ -58,7 +63,7 @@ def profile():
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
 
-    user_client = db.getUserClient()
+    user_client = db.getCurrUserClient()
     return render_template('profile.html', title='Мой профиль', user_client=user_client)
 
 
@@ -68,14 +73,14 @@ def edit_profile():
         return redirect(url_for('index'))
 
     edit_profile_form = EditProfileForm()
-    client = db.getUserClient()
+    client = db.getCurrUserClient()
 
     if request.method == 'GET':
         if client:
-            edit_profile_form.phone_number.data = client[0][2]
-            edit_profile_form.full_name.data = client[0][3]
-            edit_profile_form.address.data = client[0][4]
-            edit_profile_form.birth_date.data = client[0][5]
+            edit_profile_form.phone_number.data = client[2]
+            edit_profile_form.full_name.data = client[3]
+            edit_profile_form.address.data = client[4]
+            edit_profile_form.birth_date.data = client[5]
 
     if edit_profile_form.validate_on_submit():
         if client:
@@ -89,13 +94,8 @@ def edit_profile():
     return render_template('edit_profile.html', title='Редактировать профиль', form=edit_profile_form)
 
 
-@app.route('/hotels')
-def hotels():
-    with psycopg.connect(host=app.config['DB_SERVER'],
-                         user=app.config['DB_USER'],
-                         password=app.config['DB_PASSWORD'],
-                         dbname=app.config['DB_NAME']) as con:
-        cur = con.cursor()
-        hotel_names = cur.execute(f'SELECT name FROM hotel').fetchall()
+@app.route('/my_trips')
+def my_trips():
+    trips = db.getCurrClientTrips()
 
-    return render_template('hotels.html', title="Отели", hotel_names=hotel_names)
+    return render_template('my_trips.html', title="Мои путевки", trips=trips)

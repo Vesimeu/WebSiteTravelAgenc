@@ -6,16 +6,16 @@
     </center>
     <div class="container" style="max-width: 1000px;">
         <div class="row row-cols-1 row-cols-md-3 g-4">
-            {% if routes|length == 0 %}
-                <p class="display-6">Маршрутов не найдено.</p>
+            {% if not trips %}
+                <p class="display-6">Путевок не найдено.</p>
             {% else %}
-                {% for i in range(0, routes|length) %}
+                {% for i in range(0, trips|length) %}
                     <div class="col">
                         <div class="card" style="width: 20rem;">
-                          <img src="{{ url_for('static', filename='img/' + routes[i][1] + '.jpeg') }}" class="card-img-top" alt="...">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Moench_2339.jpg/1200px-Moench_2339.jpg" class="card-img-top" alt="...">
                             <div class="card-body">
-                                <h5 class="card-title"> {{ routes[i][1] }}</h5>
-                                <p class="card-text"> Стоимость {{ routes[i][2] }} <br> Длительность {{ routes[i][3] }} дней </p>
+                                <h5 class="card-title"> {{ trips[i][1] }}</h5>
+                                <p class="card-text"> Стоимость {{ trips[i][2] }} <br> Длительность {{ trips[i][3] }} </p>
                                 <a href="/" class="btn btn-outline-info">Переход куда-нибудь</a>
                             </div>
                         </div>                   

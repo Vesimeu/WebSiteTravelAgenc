@@ -20,12 +20,11 @@
             <div class="container-fluid">
                 <div class="navbar-nav" style="margin-left: auto; margin-right: auto;">
                     {{ render_nav_item('index', 'Главная') }}
-                    {{ render_nav_item('hotels', 'Отели') }}
                     {% if current_user.is_authenticated %}
+                        {{ render_nav_item('my_trips', 'Мои путевки') }}
                         <li class="nav-item" style = "position:absolute; right:150px;">
                             <a class="nav-link" href="/profile"> {{ current_user.login }} </a>
                         </li>
-                            <!-- {{ render_nav_item('profile', current_user.login) }} -->
                         <a class="btn btn-outline-danger" href="/logout" role="button" style = "position:absolute; right:50px;">Выйти</a>
                     {% else %}
                         <a class="btn btn-outline-info" href="/login" role="button" style = "position:absolute; right:50px;">Войти</a>

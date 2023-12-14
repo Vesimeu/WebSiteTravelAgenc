@@ -5,10 +5,10 @@
 <div style="position:absolute; left: 25px;">
 	<p class="display-6">Профиль пользователя {{ current_user.login }}</p>
 	{% if user_client %}
-		<p>ФИО: {{ user_client[0][3] }}</p>
-		<p>Номер телефона: {{ user_client[0][2] }}</p>	
-		<p>Адрес: {{ user_client[0][4] }}</p>
-		<p>Дата рожения: {{ user_client[0][5] }}</p>
+		<p>ФИО: {{ user_client[3] }}</p>
+		<p>Номер телефона: {{ user_client[2] }}</p>	
+		<p>Адрес: {{ user_client[4] }}</p>
+		<p>Дата рожения: {{ user_client[5] }}</p>
 	{% else %}
 		<p class="h6">Профиль пока пуст</p>
 	{% endif %}
