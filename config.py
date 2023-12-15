@@ -10,4 +10,4 @@ class Config(object):
     DB_USER = os.environ.get('DB_USER') or 'user'
     DB_NAME = os.environ.get('DB_NAME') or 'db'
     DB_PASSWORD = os.environ.get('DB_PASSWORD') or 'user'
-
+    SEND_FILE_MAX_AGE_DEFAULT = 600

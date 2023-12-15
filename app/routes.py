@@ -1,8 +1,7 @@
 from app import app, db
-import psycopg
 from flask import render_template, url_for, request, flash, redirect
-from flask_login import current_user, login_user, logout_user, login_required
-from forms import RegistrationForm, LoginForm, EditProfileForm
+from flask_login import current_user, login_user, logout_user
+from forms import RegistrationForm, LoginForm, EditProfileForm, HotelsForm, HotelsEntryForm
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -25,8 +24,8 @@ def login():
             flash('Неверное имя пользователя или пароль', 'error')
             return redirect(url_for('login'))
 
-        ID, login, password = res
-        user = User(ID, login, password)
+        id, login, password = res
+        user = User(id, login, password)
         login_user(user, remember=login_form.remember_me.data)
         flash(f'Вы успешно авторизованы, {current_user.login}', 'success')
 
@@ -98,4 +97,25 @@ def edit_profile():
 def my_trips():
     trips = db.getCurrClientTrips()
 
-    return render_template('my_trips.html', title="Мои путевки", trips=trips)
+    return render_template('my_trips.html', title='Мои путевки', trips=trips)
+
+
+@app.route('/route/<int:route_id>')
+def view_route(route_id):
+    route = db.getRouteByID(route_id)
+    stations = db.getStationsByRouteID(route_id)
+
+    # hotels = db.getHotelsByCity(stations[0][4])
+    # choices = []
+    # for hotel in hotels:
+    #     choices.append(hotel[0])
+    #
+    # hotels_form = HotelsEntryForm()
+    # hotels_form.hotels.choices = choices
+
+    return render_template('route.html', titile='Просмотр тура', route=route, stations=stations)
+
+
+@app.route('/route/<int:route_id>/station/<int:station_id>', methods=['GET', 'POST'])
+def view_station(route_id, station_id):
+    return render_template('route.html', titile='Просмотр тура')

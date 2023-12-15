@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, DateField, IntegerField, PasswordField, SelectField, validators
+from wtforms import (BooleanField, StringField, DateField, IntegerField, PasswordField, SelectField, validators,
+                     FormField, FieldList)
 
 
 class RegistrationForm(FlaskForm):
@@ -34,3 +35,11 @@ class EditProfileForm(FlaskForm):
     # payment_method = SelectField('Способ оплаты', choices=[('bank_card', 'Банковская карта'), ('cash', 'Наличные')],
     #                              validate_choice=True)
     # agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])
+
+
+class HotelsEntryForm(FlaskForm):
+    hotels = SelectField('Отель', coerce=str)
+
+
+class HotelsForm(FlaskForm):
+    hotelsList = FieldList(FormField(HotelsEntryForm))

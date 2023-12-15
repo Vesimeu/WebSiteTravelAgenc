@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+	<p class="display-6" style="text-align: center;"> {{ titile }}</p>
+	<br>
+	<div class="container" style="max-width: 1000px; position:absolute; left: 7%;">
+		{% if route %}
+			<figure class="figure">
+				<img src="{{ url_for('static', filename='img/' + route[1] + '.jpeg') }}" 
+				class="figure-img img-fluid rounded" style="max-width:35%;" alt="Изображение не найдено">
+			</figure>
+			<p class="lead">Название: {{ route[1] }}</p>
+			<p class="lead">Стоимость: {{ route[2] }}</p>	
+			<p class="lead">Длительность: {{ route[3] }}</p>
+			<p class="lead">Дата начала: {{ route[4] }}</p>
+			<p class="lead">Дата окончания: {{ route[5] }}</p>
+		{% else %}
+			<p class="h6">Маршрут не найден</p>
+		{% endif %}
+		<a class="btn btn-outline-success" role="button" href="/edit_profile">Забронировать</a>
+	</div>
+
+	{% if stations %}
+		<center>
+        	<p class="lead" >Пункты назначения</p>
+    	</center>
+		<div class="container" style="max-width: 900px; position: absolute; right: 50%; left: 30%;">
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				{% for i in range(0, stations|length) %}
+		            <div class="col">
+		                <div class="card" style="width: 16rem;">
+		                  <img src="{{ url_for('static', filename='img/' + stations[i][7] + '.jpeg') }}" class="card-img-top" 
+		                  alt="Изображение не найдено">
+		                    <div class="card-body">
+		                        <h5 class="card-title"> {{ stations[i][7] }}</h5>
+		                        <p class="card-text"> Стоимость {{ stations[i][2] }} <br> Длительность {{ stations[i][3] }} дней </p>
+		                        <a href="{{'/route/' + route[0]|string + '/station/' + stations[i][0]|string }}" class="btn btn-outline-info">Подробнее</a>
+		                    </div>
+		                </div>                   
+		            </div>
+		        {% endfor %}
+	    	</div>
+    	</div>
+	{% endif %}
+{% endblock %}

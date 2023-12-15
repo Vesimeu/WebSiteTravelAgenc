@@ -12,11 +12,12 @@
                 {% for i in range(0, routes|length) %}
                     <div class="col">
                         <div class="card" style="width: 20rem;">
-                          <img src="{{ url_for('static', filename='img/' + routes[i][1] + '.jpeg') }}" class="card-img-top" alt="...">
+                          <img src="{{ url_for('static', filename='img/' + routes[i][1] + '.jpeg') }}" class="card-img-top" 
+                          alt="Изображение не найдено">
                             <div class="card-body">
                                 <h5 class="card-title"> {{ routes[i][1] }}</h5>
                                 <p class="card-text"> Стоимость {{ routes[i][2] }} <br> Длительность {{ routes[i][3] }} дней </p>
-                                <a href="/" class="btn btn-outline-info">Переход куда-нибудь</a>
+                                <a href="{{'/route/' + routes[i][0]|string }}" class="btn btn-outline-info">Подробнее</a>
                             </div>
                         </div>                   
                     </div>

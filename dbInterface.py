@@ -12,7 +12,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT login, password FROM "user" WHERE ID = %s',
+            cur.execute('SELECT login, password FROM "user" WHERE id = %s',
                         [user_id])
 
             result = cur.fetchone()
@@ -72,7 +72,7 @@ class DBInterface():
 
             con.commit()
 
-            message = "Пользователь успешно зарегистрирован"
+            print("Пользователь успешно зарегистрирован")
         return True
 
     def getCurrUserClient(self):
@@ -170,9 +170,59 @@ class DBInterface():
                 print('Клиент не найден')
                 return None
 
-            res = cur.execute('SELECT * FROM trip WHERE client_ID = %s', [client[0]]).fetchall()
+            res = cur.execute('SELECT * FROM trip WHERE client_id = %s', [client[0]]).fetchall()
 
         if not res:
             print('Путевки не найдены')
             return None
+        return res
+
+    def getRouteByID(self, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM route WHERE id = %s', [route_id]).fetchone()
+
+        if not res:
+            print('Маршрут с таким ID не найден')
+            return None
+
+        return res
+
+    def getStationsByRouteID(self, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM station INNER JOIN city ON station.city_id = city.id WHERE route_id = %s',
+                              [route_id]).fetchall()
+
+        if not res:
+            print('Станции с таким route_id не найдена')
+            return None
+
+        return res
+
+    def getHotelsByCity(self, city_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+
+            res = cur.execute('SELECT name FROM hotel WHERE city_id = %s',
+                              [city_id]).fetchall()
+
+        if not res:
+            print('Отели в данном городе не найдены')
+            return None
+
         return res
