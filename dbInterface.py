@@ -250,6 +250,27 @@ class DBInterface():
             return None
         return res
 
+
+    def getСurrClientContractsIDNumber(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            client = self.getCurrUserClient()
+            if not client:
+                print('Клиент не найден')
+                return None
+
+            res = cur.execute('SELECT id, contract_number FROM contract WHERE client_id = %s',
+                              [client[1]]).fetchall()
+
+        if not res:
+            print('Договоры клиента не найдены')
+            return None
+        return res
+
     def addClientContract(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -293,6 +314,68 @@ class DBInterface():
 
         if not res:
             print('Контракт с таким id не найден')
+            return None
+
+        return res
+
+    def getContractTrips(self, contract_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM trip WHERE contract_id = %s',
+                              [contract_id]).fetchall()
+
+        if not res:
+            print('Путевки с таким contract_id не найдены')
+            return None
+
+        return res
+
+    def addClientTrip(self, request, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            trip_number = randint(10000, 90000)
+            route = self.getRouteByID(route_id)
+            client = self.getCurrUserClient()
+            tourist_group = self.getTouristGroupByRouteID(route_id)
+
+            cur.execute('INSERT INTO trip('
+                        'trip_number,'
+                        'price,'
+                        'group_id,'
+                        'client_id,'
+                        'contract_id) VALUES (%s, %s, %s, %s, %s)',
+                        [
+                            trip_number,
+                            route[2],
+                            tourist_group[0][0],
+                            client[0],
+                            request.form['choose_contract'],
+                        ]
+                        )
+            print('Контракт добавлен')
+
+            return True
+
+    def getTouristGroupByRouteID(self, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM tourist_group WHERE route_id = %s',
+                              [route_id]).fetchall()
+
+        if not res:
+            print('Группы с таким route_id не найдены')
             return None
 
         return res

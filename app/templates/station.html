@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'bootstrap5/form.html' import render_field %}
+{% from 'bootstrap5/form.html' import render_form %}
 
 {% block content %}
 	<p class="display-6" style="text-align: center;"> {{ titile }}</p>
@@ -18,30 +18,9 @@
 		{% else %}
 			<p class="h6">Маршрут не найден</p>
 		{% endif %}
-		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Забронировать</a>
+		<a class="btn btn-outline-success" role="button" href="/edit_profile">Забронировать</a>
 	</div>
-	<!-- modal window -->
-	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h1 class="modal-title fs-5" id="exampleModalLabel">Новая путевка</h1>
-	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-	      </div>
-	      <div class="modal-body">
-	        <form method="POST">
-	        	{{ form.hidden_tag() }}
-				{{ render_field(form.choose_contract) }}
-				<br>
-		        <input class="btn btn-primary" type="submit" value="Забронировать"></input>
-	        </form>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
+
 	{% if stations %}
 		<center>
         	<p class="lead" >Пункты назначения</p>
