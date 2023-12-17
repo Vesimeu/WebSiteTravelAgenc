@@ -207,11 +207,8 @@ class DBInterface():
             res = cur.execute('SELECT * FROM station INNER JOIN city ON station.city_id = city.id WHERE route_id = %s',
                               [route_id]).fetchall()
 
-
-            'SELECT * FROM survey INNER JOIN respondent ON survey.id = respondent.'
-
         if not res:
-            print('Станции с таким route_id не найдена')
+            print('Станции с таким route_id не найдены')
             return None
 
         return res
@@ -283,3 +280,19 @@ class DBInterface():
             print('Контракт добавлен')
 
             return True
+
+    def getContractByID(self, contract_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM contract WHERE id = %s',
+                              [contract_id]).fetchone()
+
+        if not res:
+            print('Контракт с таким id не найден')
+            return None
+
+        return res

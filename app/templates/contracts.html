@@ -19,7 +19,7 @@
                         <div class="card-body">
                             <h5 class="card-title"> Договор № {{ contracts[i][2] }}</h5>
                             <p class="card-text"> Дата заключения {{ contracts[i][3] }} <br> Метод оплаты {{ contracts[i][4] }} </p>
-                            <a href="/" class="btn btn-outline-info">Переход куда-нибудь</a>
+                            <a href="{{'/contract/' + contracts[i][0]|string}}" class="btn btn-outline-info">Подробнее</a>
                         </div>
                     </div>                   
                 </div>

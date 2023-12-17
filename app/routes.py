@@ -115,6 +115,14 @@ def contracts():
                            title='Мои договоры', form=contract_form, contracts=res_contracts)
 
 
+@app.route('/contract/<int:contract_id>')
+def view_contract(contract_id):
+    contract = db.getContractByID(contract_id)
+    print(contract)
+
+    return render_template('trips.html', contract=contract)
+
+
 @app.route('/route/<int:route_id>')
 def view_route(route_id):
     route = db.getRouteByID(route_id)
