@@ -1,7 +1,10 @@
+import datetime
+
 import psycopg
 from flask_login import current_user
 from werkzeug.security import generate_password_hash
 from config import Config
+from random import randint
 
 
 class DBInterface():
@@ -204,6 +207,9 @@ class DBInterface():
             res = cur.execute('SELECT * FROM station INNER JOIN city ON station.city_id = city.id WHERE route_id = %s',
                               [route_id]).fetchall()
 
+
+            'SELECT * FROM survey INNER JOIN respondent ON survey.id = respondent.'
+
         if not res:
             print('Станции с таким route_id не найдена')
             return None
@@ -226,3 +232,54 @@ class DBInterface():
             return None
 
         return res
+
+    def getСurrClientContracts(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            client = self.getCurrUserClient()
+            if not client:
+                print('Клиент не найден')
+                return None
+
+            res = cur.execute('SELECT * FROM contract WHERE client_id = %s',
+                              [client[1]]).fetchall()
+
+        if not res:
+            print('Договоры клиента не найдены')
+            return None
+        return res
+
+    def addClientContract(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            client = self.getCurrUserClient()
+            curr_date = datetime.date.today()
+            contract_number = randint(10000, 90000)
+
+            if not client:
+                print('Клиент не найден')
+                return False
+
+            cur.execute('INSERT INTO contract('
+                        'client_id,'
+                        'contract_number,'
+                        'date_of_conclusion,'
+                        'payment_method) VALUES (%s, %s, %s, %s)',
+                        [
+                            client[0],
+                            contract_number,
+                            curr_date,
+                            request.form['payment_method'],
+                        ]
+                        )
+            print('Контракт добавлен')
+
+            return True

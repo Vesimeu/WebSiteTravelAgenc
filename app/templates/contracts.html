@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block content %}
+	<center>
+        <p class="display-6">{{ title }}</p>
+    </center>
+
+    <div class="container" style="max-width: 200px; position: absolute; right: 10%; left: 36%; top: 7%;">
+		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Новый договор</button>
+	</div>
+    {% if contracts %}
+    <div class="container" style="max-width: 1000px;">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for i in range(0, contracts|length) %}
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                      <img src="{{ url_for('static', filename='img/Договор.jpeg') }}" class="card-img-top" alt="..." style="max-width: 50%">
+                        <div class="card-body">
+                            <h5 class="card-title"> Договор № {{ contracts[i][2] }}</h5>
+                            <p class="card-text"> Дата заключения {{ contracts[i][3] }} <br> Метод оплаты {{ contracts[i][4] }} </p>
+                            <a href="/" class="btn btn-outline-info">Переход куда-нибудь</a>
+                        </div>
+                    </div>                   
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <center><p class="display-6">Путевок не найдено.</p></center>
+    {% endif %}
+
+	<!-- modal window -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="exampleModalLabel">Новый договор</h1>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+	      </div>
+	      <div class="modal-body">
+	        <form method="POST">
+	        	{{ form.hidden_tag() }}
+				{{ render_field(form.payment_method) }}
+		        {{ render_field(form.agreed_rules) }}
+		        <input class="btn btn-primary" type="submit" value="Добавить"></input>
+	        </form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+{% endblock %}

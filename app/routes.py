@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
-from forms import RegistrationForm, LoginForm, EditProfileForm, HotelsForm, HotelsEntryForm
+from forms import RegistrationForm, LoginForm, EditProfileForm, HotelsForm, HotelsEntryForm, ContractForm
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -93,11 +93,26 @@ def edit_profile():
     return render_template('edit_profile.html', title='Редактировать профиль', form=edit_profile_form)
 
 
-@app.route('/my_trips')
-def my_trips():
-    trips = db.getCurrClientTrips()
+@app.route('/trips')
+def trips():
+    client_trips = db.getCurrClientTrips()
 
-    return render_template('my_trips.html', title='Мои путевки', trips=trips)
+    return render_template('trips.html', title='Мои путевки', trips=client_trips)
+
+
+@app.route('/contracts', methods=['GET', 'POST'])
+def contracts():
+    contract_form = ContractForm()
+    res_contracts = db.getСurrClientContracts()
+
+    if contract_form.validate_on_submit():
+        if not db.addClientContract(request):
+            flash('Для заключения контракта вам необходимо заполнить профиль', 'danger')
+
+        return redirect(url_for('contracts'))
+
+    return render_template('contracts.html',
+                           title='Мои договоры', form=contract_form, contracts=res_contracts)
 
 
 @app.route('/route/<int:route_id>')
@@ -105,17 +120,20 @@ def view_route(route_id):
     route = db.getRouteByID(route_id)
     stations = db.getStationsByRouteID(route_id)
 
-    # hotels = db.getHotelsByCity(stations[0][4])
-    # choices = []
-    # for hotel in hotels:
-    #     choices.append(hotel[0])
-    #
-    # hotels_form = HotelsEntryForm()
-    # hotels_form.hotels.choices = choices
+    print(stations)
 
     return render_template('route.html', titile='Просмотр тура', route=route, stations=stations)
 
 
 @app.route('/route/<int:route_id>/station/<int:station_id>', methods=['GET', 'POST'])
 def view_station(route_id, station_id):
-    return render_template('route.html', titile='Просмотр тура')
+    if not current_user.is_authenticated:
+        flash('Для конфигурирования путевки необходимо авторизоваться', 'danger')
+        return redirect(url_for('login'))
+
+    client = db.getCurrUserClient()
+    if not client:
+        flash('Для конфигурирования путевки необходимо заполнить профиль', 'danger')
+        return redirect(url_for('profile'))
+
+    return render_template('station.html', titile='Договоры')

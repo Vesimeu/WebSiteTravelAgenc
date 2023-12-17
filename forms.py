@@ -32,9 +32,12 @@ class EditProfileForm(FlaskForm):
     birth_date = DateField('Дата рождения', format='%Y-%m-%d', validators=[validators.InputRequired()])
     address = StringField('Адрес', [validators.InputRequired()])
     phone_number = StringField('Номер телефона', [validators.Length(min=6, max=12), validators.InputRequired()])
-    # payment_method = SelectField('Способ оплаты', choices=[('bank_card', 'Банковская карта'), ('cash', 'Наличные')],
-    #                              validate_choice=True)
-    # agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])
+
+
+class ContractForm(FlaskForm):
+    payment_method = SelectField('Способ оплаты', choices=[('Банковская карта', 'Банковская карта'), ('Наличные', 'Наличные')],
+                                 validate_choice=True)
+    agreed_rules = BooleanField('Я ознакомлен с политикой компании', [validators.InputRequired()])
 
 
 class HotelsEntryForm(FlaskForm):
