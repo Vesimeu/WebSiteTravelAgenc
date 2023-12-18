@@ -432,6 +432,10 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
+            if self.getHotelInTripByID(request.form['choose_trip'], request.form['choose_hotel']):
+                print('Данная отель уже добавлен в путевку')
+                return False
+
             cur.execute('INSERT INTO hotel_in_trip('
                         'trip_id,'
                         'hotel_id) VALUES (%s, %s)',
@@ -451,6 +455,10 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
+            if self.getExcursionInTripByID(request.form['choose_excursion'], request.form['choose_trip']):
+                print('Данная экскурсия уже добавлена в путевку')
+                return False
+
             cur.execute('INSERT INTO excursion_in_trip('
                         'trip_id,'
                         'excursion_id) VALUES (%s, %s)',
@@ -462,3 +470,86 @@ class DBInterface():
             print('Экскурсия добавлена в путевку')
 
             return True
+
+    def getExcursionInTripByID(self, excursion_id, trip_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM excursion_in_trip'
+                              ' WHERE excursion_id = %s AND trip_id = %s',
+                              [excursion_id, trip_id]).fetchone()
+
+        if not res:
+            print('Экскурсии с таким id не найдены')
+            return None
+        return res
+
+    def getHotelInTripByID(self, trip_id, hotel_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM hotel_in_trip'
+                              ' WHERE trip_id = %s AND hotel_id = %s',
+                              [trip_id, hotel_id]).fetchone()
+
+        if not res:
+            print('Отели с таким id не найдены')
+            return None
+        return res
+
+    def getExcursionInTripWithJoinsByID(self, trip_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM excursion_in_trip '
+                              'INNER JOIN excursion ON excursion_in_trip.excursion_id = excursion.id'
+                              ' INNER JOIN city ON excursion.city_id = city.id'
+                              ' WHERE trip_id = %s',
+                              [trip_id]).fetchall()
+
+        if not res:
+            print('Отели с таким id не найдены')
+            return None
+        return res
+
+    def getHotelInTripWithJoinsByID(self, trip_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM hotel_in_trip '
+                              'INNER JOIN hotel ON hotel_in_trip.hotel_id = hotel.id'
+                              ' INNER JOIN city ON hotel.city_id = city.id'
+                              '  WHERE trip_id = %s',
+                              [trip_id]).fetchall()
+
+        if not res:
+            print('Отели с таким id не найдены')
+            return None
+        return res
+
+    def getTripByID(self, trip_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM trip WHERE id = %s',
+                              [trip_id]).fetchone()
+
+        if not res:
+            print('Отели с таким id не найдены')
+            return None
+        return res

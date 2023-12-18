@@ -119,6 +119,18 @@ def view_contract(contract_id):
     return render_template('trips.html', contract=contract, contract_trips=contract_trips)
 
 
+@app.route('/contract/<int:contract_id>/trip/<int:trip_id>')
+def view_trip(contract_id, trip_id):
+    excursions = db.getExcursionInTripWithJoinsByID(trip_id)
+    hotels = db.getHotelInTripWithJoinsByID(trip_id)
+    trip = db.getTripByID(trip_id)
+
+    print(hotels)
+    print(excursions)
+
+    return render_template('trip.html', excursions=excursions, hotels=hotels, trip=trip)
+
+
 @app.route('/route/<int:route_id>', methods=['GET', 'POST'])
 def view_route(route_id):
     route = db.getRouteByID(route_id)
@@ -147,27 +159,44 @@ def view_station(route_id, station_id):
         flash('Для конфигурирования путевки необходимо заполнить профиль', 'danger')
         return redirect(url_for('profile'))
 
+    trips = db.getClientTripsByRouteID(route_id)
+    if not trips:
+        flash('Для конфигурирования путевки ее необходимо забронировать', 'danger')
+        return redirect(url_for('view_route', route_id=route_id))
+
     station = db.getStationByID(station_id)
     hotels = db.getHotelsByCity(station[4])
     excursions_id_name = db.getExcursionsIDNameByCityID(station[4])
-    trips = db.getClientTripsByRouteID(route_id)
 
     hotel_form = HotelForm()
     excursion_form = ExcursionForm()
 
-    hotel_form.choose_trip.choices = trips
-    hotel_form.choose_hotel.choices = hotels
-
-    excursion_form.choose_trip.choices = trips
-    excursion_form.choose_excursion.choices = excursions_id_name
+    if trips:
+        hotel_form.choose_trip.choices = trips
+        excursion_form.choose_trip.choices = trips
+    else:
+        hotel_form.choose_trip.choices = [0, 'null']
+        excursion_form.choose_trip.choices = [0, 'null']
+    if hotels:
+        hotel_form.choose_hotel.choices = hotels
+    else:
+        hotel_form.choose_hotel.choices = [0, 'null']
+    if excursions_id_name:
+        excursion_form.choose_excursion.choices = excursions_id_name
+    else:
+        excursion_form.choose_excursion.choices = [0, 'null']
 
     if hotel_form.validate_on_submit():
-        db.addHotelInTrip(request)
-        flash('Отель добавлен в путевку', 'success')
+        if db.addHotelInTrip(request):
+            flash('Отель успешно добавлен в путевку', 'success')
+        else:
+            flash('Данный отель уже есть путевке', 'danger')
 
     if excursion_form.validate_on_submit():
-        db.addExcursionInTrip(request)
-        flash('Экскурсия добавлена в путевку', 'success')
+        if db.addExcursionInTrip(request):
+            flash('Экскурсия добавлена в путевку', 'success')
+        else:
+            flash('Данная экскурсия уже есть путевке', 'danger')
 
     return render_template('station.html', station=station, hotels=hotels,
                            excursions=excursions_id_name, hotel_form=hotel_form, excursion_form=excursion_form)

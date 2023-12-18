@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block content %}
+	<p class="display-6" style="text-align: center;"> Путевка № {{ trip[1] }}</p>
+	<br>
+    <p class="display-6" style="position: absolute; left: 20%; top: 13%;">Отели</p>
+	{% if hotels %}
+		<div class="container" style="max-width: 800px; position: absolute; right: 50%; left: 5%; top: 20%">
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				{% for i in range(0, hotels|length) %}
+		            <div class="col">
+		                <div class="card" style="width: 14rem;">
+		                  <img src="{{ url_for('static', filename='img/Отель.jpeg') }}" class="card-img-top" 
+		                  alt="Изображение не найдено" style="max-width: 70%">
+		                    <div class="card-body">
+		                        <h5 class="card-title"> {{ hotels[i][3] }} <br></h5>
+		                        <p class="card-text"> Город: {{ hotels[i][7] }}</p>
+		                        <!-- <a href="/" class="btn btn-outline-info">Выбрать</a> -->
+		                    </div>
+		                </div>                   
+		            </div>
+		        {% endfor %}
+	    	</div>
+    	</div>
+	{% else %}
+    	<p class="lead" style="position: absolute; left: 19%; top: 18%;">Отели не найдены</p>
+	{% endif %}
+
+	<p class="display-6" style="position: absolute; right: 20%; top: 13%;">Экскурсии</p>
+	{% if excursions %}
+		<div class="container" style="max-width: 800px; position: absolute; right: 5%; left: 50%; top: 20%;">
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				{% for i in range(0, excursions|length) %}
+		            <div class="col">
+		                <div class="card" style="width: 14rem;">
+		                  <img src="{{ url_for('static', filename='img/Экскурсия.jpeg') }}" class="card-img-top" 
+		                  alt="Изображение не найдено" style="max-width: 70%">
+		                    <div class="card-body">
+		                        <h5 class="card-title"> {{ excursions[i][3] }} <br></h5>
+		                        <p class="card-text"> Город: {{ excursions[i][8] }}</p>
+		                        <!-- <a href="/" class="btn btn-outline-info">Выбрать</a> -->
+		                    </div>
+		                </div>                   
+		            </div>
+		        {% endfor %}
+	    	</div>
+    	</div>
+    {% else %}
+    	<p class="lead" style="position: absolute; right: 19%; top: 18%;">Экскурсии не найдены</p>
+	{% endif %}
+{% endblock %}

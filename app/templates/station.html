@@ -24,6 +24,8 @@
 		        {% endfor %}
 	    	</div>
     	</div>
+	{% else %}
+    	<p class="lead" style="position: absolute; left: 19%; top: 18%;">Отели не найдены</p>
 	{% endif %}
 	<!-- hotels modal window -->
 	<div class="modal fade" id="hotelModal" tabindex="-1" aria-labelledby="hotelModalLabel" aria-hidden="true">
@@ -70,7 +72,7 @@
 	    	</div>
     	</div>
     {% else %}
-    <p class="lead" style="position: absolute; right: 20%; top: 18%;">Экскурсии не найдены</p>
+    <p class="lead" style="position: absolute; right: 19%; top: 18%;">Экскурсии не найдены</p>
 	{% endif %}
 	<!-- hotels modal window -->
 	<div class="modal fade" id="excursionModal" tabindex="-1" aria-labelledby="excursionModalLabel" aria-hidden="true">
