@@ -13,7 +13,7 @@
                       <img src="{{ url_for('static', filename='img/Путевка.jpeg') }}" class="card-img-top" alt="..." style="max-width: 50%">
                         <div class="card-body">
                             <h5 class="card-title"> Путевка № {{ contract_trips[i][1] }}</h5>
-                            <p class="card-text"> Стоимость {{ contract_trips[i][2] }}</p>
+                            <p class="card-text"> Стоимость: {{ contract_trips[i][2] }} <br> Маршрут: {{ contract_trips[i][7] }}  </p>
                             <a href="/" class="btn btn-outline-info">Переход куда-нибудь</a>
                         </div>
                     </div>                   
@@ -22,6 +22,6 @@
         </div>
     </div>
     {% else %}
-        <center><p class="display-6">Путевок не найдено.</p></center>
+        <center><p class="lead">Путевок не найдено.</p></center>
     {% endif %}
 {% endblock %}

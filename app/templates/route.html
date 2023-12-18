@@ -18,7 +18,9 @@
 		{% else %}
 			<p class="h6">Маршрут не найден</p>
 		{% endif %}
-		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Забронировать</a>
+		{% if current_user.is_authenticated %}
+			<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Забронировать</a>
+		{% endif %}
 	</div>
 	<!-- modal window -->
 	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -33,7 +35,7 @@
 	        	{{ form.hidden_tag() }}
 				{{ render_field(form.choose_contract) }}
 				<br>
-		        <input class="btn btn-primary" type="submit" value="Забронировать"></input>
+		        <input class="btn btn-outline-info" type="submit" value="Забронировать"></input>
 	        </form>
 	      </div>
 	      <div class="modal-footer">
@@ -56,7 +58,9 @@
 		                    <div class="card-body">
 		                        <h5 class="card-title"> {{ stations[i][7] }}</h5>
 		                        <p class="card-text"> Длительность {{ stations[i][3] }} дня(ей) </p>
-		                        <a href="{{'/route/' + route[0]|string + '/station/' + stations[i][0]|string }}" class="btn btn-outline-info">Подробнее</a>
+		                        {% if current_user.is_authenticated %}
+		                        <a href="{{'/route/' + route[0]|string + '/station/' + stations[i][0]|string }}" class="btn btn-outline-info">Конфигурация</a>
+		                        {% endif %}
 		                    </div>
 		                </div>                   
 		            </div>

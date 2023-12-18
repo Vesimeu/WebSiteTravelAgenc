@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
-from forms import RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm
+from forms import RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -95,13 +95,16 @@ def edit_profile():
 
 @app.route('/contracts', methods=['GET', 'POST'])
 def contracts():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
     contract_form = ContractForm()
     res_contracts = db.getСurrClientContracts()
 
     if contract_form.validate_on_submit():
         if not db.addClientContract(request):
             flash('Для заключения контракта вам необходимо заполнить профиль', 'danger')
-
+            return redirect(url_for('edit_profile'))
         return redirect(url_for('contracts'))
 
     return render_template('contracts.html',
@@ -122,11 +125,16 @@ def view_route(route_id):
     stations = db.getStationsByRouteID(route_id)
     contracts_res = db.getСurrClientContractsIDNumber()
 
+    if not contracts_res and current_user.is_authenticated:
+        flash('Для бронирования путевки необходимо заключить договор', 'danger')
+        return redirect(url_for('contracts'))
+
     trip_form = TripForm()
     trip_form.choose_contract.choices = contracts_res
 
     if trip_form.validate_on_submit():
         db.addClientTrip(request, route_id)
+        flash('Путевка успешно забронирована', 'success')
 
     return render_template('route.html', titile='Просмотр тура',
                            route=route, stations=stations, form=trip_form)
@@ -134,14 +142,32 @@ def view_route(route_id):
 
 @app.route('/route/<int:route_id>/station/<int:station_id>', methods=['GET', 'POST'])
 def view_station(route_id, station_id):
-    if not current_user.is_authenticated:
-        flash('Для конфигурирования путевки необходимо авторизоваться', 'danger')
-        return redirect(url_for('login'))
-
     client = db.getCurrUserClient()
     if not client:
         flash('Для конфигурирования путевки необходимо заполнить профиль', 'danger')
         return redirect(url_for('profile'))
 
+    station = db.getStationByID(station_id)
+    hotels = db.getHotelsByCity(station[4])
+    excursions_id_name = db.getExcursionsIDNameByCityID(station[4])
+    trips = db.getClientTripsByRouteID(route_id)
 
-    return render_template('station.html', titile='Договоры')
+    hotel_form = HotelForm()
+    excursion_form = ExcursionForm()
+
+    hotel_form.choose_trip.choices = trips
+    hotel_form.choose_hotel.choices = hotels
+
+    excursion_form.choose_trip.choices = trips
+    excursion_form.choose_excursion.choices = excursions_id_name
+
+    if hotel_form.validate_on_submit():
+        db.addHotelInTrip(request)
+        flash('Отель добавлен в путевку', 'success')
+
+    if excursion_form.validate_on_submit():
+        db.addExcursionInTrip(request)
+        flash('Экскурсия добавлена в путевку', 'success')
+
+    return render_template('station.html', station=station, hotels=hotels,
+                           excursions=excursions_id_name, hotel_form=hotel_form, excursion_form=excursion_form)

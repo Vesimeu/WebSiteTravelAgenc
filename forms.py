@@ -41,3 +41,13 @@ class ContractForm(FlaskForm):
 
 class TripForm(FlaskForm):
     choose_contract = SelectField('Выберите номер договора')
+
+
+class HotelForm(FlaskForm):
+    choose_trip = SelectField('Выберите номер путевки')
+    choose_hotel = SelectField('Выберите отель')
+
+
+class ExcursionForm(FlaskForm):
+    choose_trip = SelectField('Выберите номер путевки')
+    choose_excursion = SelectField('Выберите экскурсию')

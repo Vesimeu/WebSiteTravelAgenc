@@ -7,7 +7,7 @@
     </center>
 
     <div class="container" style="max-width: 200px; position: absolute; right: 10%; left: 36%; top: 7%;">
-		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Новый договор</button>
+		<button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Новый договор</button>
 	</div>
     {% if contracts %}
     <div class="container" style="max-width: 1000px;">
@@ -18,7 +18,7 @@
                       <img src="{{ url_for('static', filename='img/Договор.jpeg') }}" class="card-img-top" alt="..." style="max-width: 50%">
                         <div class="card-body">
                             <h5 class="card-title"> Договор № {{ contracts[i][2] }}</h5>
-                            <p class="card-text"> Дата заключения {{ contracts[i][3] }} <br> Метод оплаты {{ contracts[i][4] }} </p>
+                            <p class="card-text"> Дата заключения: {{ contracts[i][3] }} <br> Метод оплаты: {{ contracts[i][4] }} </p>
                             <a href="{{'/contract/' + contracts[i][0]|string}}" class="btn btn-outline-info">Подробнее</a>
                         </div>
                     </div>                   
@@ -27,7 +27,7 @@
         </div>
     </div>
     {% else %}
-        <center><p class="display-6">Путевок не найдено.</p></center>
+        <center><p class="lead">Договоров не найдено.</p></center>
     {% endif %}
 
 	<!-- modal window -->
@@ -43,7 +43,7 @@
 	        	{{ form.hidden_tag() }}
 				{{ render_field(form.payment_method) }}
 		        {{ render_field(form.agreed_rules) }}
-		        <input class="btn btn-primary" type="submit" value="Заключить"></input>
+		        <input class="btn btn-outline-info" type="submit" value="Заключить"></input>
 	        </form>
 	      </div>
 	      <div class="modal-footer">

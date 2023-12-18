@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div style="position:absolute; left: 25px;">
+<div style="position:absolute; left: 5%;">
 	<p class="display-6">Профиль пользователя {{ current_user.login }}</p>
 	{% if user_client %}
 		<p class="lead">ФИО: {{ user_client[3] }}</p>
@@ -10,7 +10,7 @@
 		<p class="lead">Адрес: {{ user_client[4] }}</p>
 		<p class="lead">Дата рожения: {{ user_client[5] }}</p>
 	{% else %}
-		<p class="h6">Профиль пока пуст</p>
+		<p class="lead">Профиль пока пуст</p>
 	{% endif %}
 	<a class="btn btn-outline-success" role="button" href="/edit_profile">Редактировать профиль</a>
 </div>

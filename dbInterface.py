@@ -85,10 +85,13 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            user_client = cur.execute('SELECT * FROM client WHERE user_id = %s',
-                                      [current_user.id]).fetchone()
-        if not user_client:
-            return None
+            try:
+                user_client = cur.execute('SELECT * FROM client WHERE user_id = %s',
+                                          [current_user.id]).fetchone()
+            except:
+                print("Пользователь не найден")
+                return None
+
         return user_client
 
     def addClient(self, request):
@@ -151,7 +154,6 @@ class DBInterface():
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
             res = cur.execute('SELECT * FROM route').fetchall()
 
@@ -185,7 +187,6 @@ class DBInterface():
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
 
             res = cur.execute('SELECT * FROM route WHERE id = %s', [route_id]).fetchone()
@@ -201,7 +202,6 @@ class DBInterface():
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
 
             res = cur.execute('SELECT * FROM station INNER JOIN city ON station.city_id = city.id WHERE route_id = %s',
@@ -213,15 +213,31 @@ class DBInterface():
 
         return res
 
+    def getStationByID(self, station_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT * FROM station INNER JOIN city ON station.city_id = city.id'
+                              ' WHERE station.id = %s',
+                              [station_id]).fetchone()
+
+        if not res:
+            print('Станции с таким id не найдены')
+            return None
+
+        return res
+
     def getHotelsByCity(self, city_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
 
-            res = cur.execute('SELECT name FROM hotel WHERE city_id = %s',
+            res = cur.execute('SELECT id, name FROM hotel WHERE city_id = %s',
                               [city_id]).fetchall()
 
         if not res:
@@ -249,7 +265,6 @@ class DBInterface():
             print('Договоры клиента не найдены')
             return None
         return res
-
 
     def getСurrClientContractsIDNumber(self):
         with psycopg.connect(host=Config.DB_SERVER,
@@ -325,7 +340,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            res = cur.execute('SELECT * FROM trip WHERE contract_id = %s',
+            res = cur.execute('SELECT * FROM trip INNER JOIN route ON trip.group_id = route.id WHERE contract_id = %s',
                               [contract_id]).fetchall()
 
         if not res:
@@ -377,5 +392,73 @@ class DBInterface():
         if not res:
             print('Группы с таким route_id не найдены')
             return None
-
         return res
+
+    def getExcursionsIDNameByCityID(self, city_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT id, name FROM excursion WHERE city_id = %s',
+                              [city_id]).fetchall()
+
+        if not res:
+            print('Экскурсии с таким city_id не найдены')
+            return None
+        return res
+
+    def getClientTripsByRouteID(self, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT trip.id, trip_number'
+                              ' FROM trip INNER JOIN route ON trip.group_id = route.id WHERE route.id = %s',
+                              [route_id]).fetchall()
+
+        if not res:
+            print('Путевки с таким route_id не найдены')
+            return None
+        return res
+
+    def addHotelInTrip(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('INSERT INTO hotel_in_trip('
+                        'trip_id,'
+                        'hotel_id) VALUES (%s, %s)',
+                        [
+                            request.form['choose_trip'],
+                            request.form['choose_hotel']
+                        ]
+                        )
+            print('Отель добавлен в путевку')
+
+            return True
+
+    def addExcursionInTrip(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('INSERT INTO excursion_in_trip('
+                        'trip_id,'
+                        'excursion_id) VALUES (%s, %s)',
+                        [
+                            request.form['choose_trip'],
+                            request.form['choose_excursion']
+                        ]
+                        )
+            print('Экскурсия добавлена в путевку')
+
+            return True

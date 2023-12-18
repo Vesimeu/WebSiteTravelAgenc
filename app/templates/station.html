@@ -1,41 +1,23 @@
 {% extends "base.html" %}
-{% from 'bootstrap5/form.html' import render_form %}
+{% from 'bootstrap5/form.html' import render_field %}
 
 {% block content %}
-	<p class="display-6" style="text-align: center;"> {{ titile }}</p>
+	<p class="display-6" style="text-align: center;"> {{ station[7] }}</p>
 	<br>
-	<div class="container" style="max-width: 1000px; position:absolute; left: 7%;">
-		{% if route %}
-			<figure class="figure">
-				<img src="{{ url_for('static', filename='img/' + route[1] + '.jpeg') }}" 
-				class="figure-img img-fluid rounded" style="max-width:35%;" alt="Изображение не найдено">
-			</figure>
-			<p class="lead">Название: {{ route[1] }}</p>
-			<p class="lead">Стоимость: {{ route[2] }}</p>	
-			<p class="lead">Длительность: {{ route[3] }}</p>
-			<p class="lead">Дата начала: {{ route[4] }}</p>
-			<p class="lead">Дата окончания: {{ route[5] }}</p>
-		{% else %}
-			<p class="h6">Маршрут не найден</p>
-		{% endif %}
-		<a class="btn btn-outline-success" role="button" href="/edit_profile">Забронировать</a>
-	</div>
-
-	{% if stations %}
-		<center>
-        	<p class="lead" >Пункты назначения</p>
-    	</center>
-		<div class="container" style="max-width: 900px; position: absolute; right: 50%; left: 30%;">
+	{% if hotels %}
+		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" style="position: absolute; left: 27%; top: 14%;" 
+		data-bs-target="#hotelModal" data-bs-whatever="@getbootstrap">Выбрать отель</a>
+        <p class="display-6" style="position: absolute; left: 20%; top: 13%;">Отели</p>
+		<div class="container" style="max-width: 800px; position: absolute; right: 50%; left: 5%; top: 20%">
 			<div class="row row-cols-1 row-cols-md-3 g-4">
-				{% for i in range(0, stations|length) %}
+				{% for i in range(0, hotels|length) %}
 		            <div class="col">
-		                <div class="card" style="width: 16rem;">
-		                  <img src="{{ url_for('static', filename='img/' + stations[i][7] + '.jpeg') }}" class="card-img-top" 
-		                  alt="Изображение не найдено">
+		                <div class="card" style="width: 14rem;">
+		                  <img src="{{ url_for('static', filename='img/Отель.jpeg') }}" class="card-img-top" 
+		                  alt="Изображение не найдено" style="max-width: 70%">
 		                    <div class="card-body">
-		                        <h5 class="card-title"> {{ stations[i][7] }}</h5>
-		                        <p class="card-text"> Длительность {{ stations[i][3] }} дня(ей) </p>
-		                        <a href="{{'/route/' + route[0]|string + '/station/' + stations[i][0]|string }}" class="btn btn-outline-info">Подробнее</a>
+		                        <h5 class="card-title"> {{ hotels[i][1] }} <br></h5>
+		                        <!-- <a href="/" class="btn btn-outline-info">Выбрать</a> -->
 		                    </div>
 		                </div>                   
 		            </div>
@@ -43,4 +25,74 @@
 	    	</div>
     	</div>
 	{% endif %}
+	<!-- hotels modal window -->
+	<div class="modal fade" id="hotelModal" tabindex="-1" aria-labelledby="hotelModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="hotelModalLabel">Выбрать отель</h1>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+	      </div>
+	      <div class="modal-body">
+	        <form method="POST" action="">
+	        	{{ hotel_form.hidden_tag() }}
+				{{ render_field(hotel_form.choose_trip) }}
+				{{ render_field(hotel_form.choose_hotel) }}
+				<br>
+		        <input class="btn btn-outline-info" type="submit" value="Забронировать"></input>
+	        </form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<p class="display-6" style="position: absolute; right: 20%; top: 13%;">Экскурсии</p>
+	{% if excursions %}
+		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" style="position: absolute; right: 10%; top: 14%;" 
+		data-bs-target="#excursionModal" data-bs-whatever="@getbootstrap">Выбрать экскурсии</a>
+		<div class="container" style="max-width: 800px; position: absolute; right: 5%; left: 50%; top: 20%;">
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				{% for i in range(0, excursions|length) %}
+		            <div class="col">
+		                <div class="card" style="width: 14rem;">
+		                  <img src="{{ url_for('static', filename='img/Экскурсия.jpeg') }}" class="card-img-top" 
+		                  alt="Изображение не найдено" style="max-width: 70%">
+		                    <div class="card-body">
+		                        <h5 class="card-title"> {{ excursions[i][1] }} <br></h5>
+		                        <!-- <a href="/" class="btn btn-outline-info">Выбрать</a> -->
+		                    </div>
+		                </div>                   
+		            </div>
+		        {% endfor %}
+	    	</div>
+    	</div>
+    {% else %}
+    <p class="lead" style="position: absolute; right: 20%; top: 18%;">Экскурсии не найдены</p>
+	{% endif %}
+	<!-- hotels modal window -->
+	<div class="modal fade" id="excursionModal" tabindex="-1" aria-labelledby="excursionModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="excursionModalLabel">Выбрать экскурсии</h1>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+	      </div>
+	      <div class="modal-body">
+	        <form method="POST" action="">
+	        	{{ excursion_form.hidden_tag() }}
+				{{ render_field(excursion_form.choose_trip) }}
+				{{ render_field(excursion_form.choose_excursion) }}
+				<br>
+		        <input class="btn btn-outline-info" type="submit" value="Добавить"></input>
+	        </form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 {% endblock %}
