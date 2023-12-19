@@ -5,6 +5,7 @@
     <center>
         <p class="display-6">Панель администратора</p>
     </center>
+
     <a class="btn btn-outline-danger" role="button" data-bs-toggle="modal" style="position: absolute; left: 27%; top: 20%;" 
     data-bs-target="#ban" data-bs-whatever="@getbootstrap">Забанить пользователя</a>
     <div class="modal fade" id="ban" tabindex="-1" aria-labelledby="banlabel" aria-hidden="true">
@@ -69,6 +70,31 @@
                 {{ render_field(group_form.choose_route) }}
                 <br>
                 <input class="btn btn-outline-info" type="submit" value="Создать"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a class="btn btn-outline-info" role="button" data-bs-toggle="modal" style="position: absolute; left: 63%; top: 20%;" 
+    data-bs-target="#addTripToGroup" data-bs-whatever="@getbootstrap">Добавить пуетвку в группу</a>
+    <div class="modal fade" id="addTripToGroup" tabindex="-1" aria-labelledby="addTripToGroupLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addTripToGroupLabel">Добавить пуетвку в группу</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="">
+                {{ group_trip_form.hidden_tag() }}
+                {{ render_field(group_trip_form.choose_trip)}}
+                {{ render_field(group_trip_form.choose_group) }}
+                <br>
+                <input class="btn btn-outline-info" type="submit" value="Добавить"></input>
             </form>
           </div>
           <div class="modal-footer">

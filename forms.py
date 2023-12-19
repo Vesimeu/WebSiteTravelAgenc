@@ -60,5 +60,10 @@ class UnbanUserForm(FlaskForm):
 
 
 class GroupForm(FlaskForm):
-    choose_route = SelectField('Выберите тур для группы', [validators.InputRequired()])
+    choose_route = SelectField('Выберите тур для группы')
     travel_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])
+
+
+class AddGropToTripFrom(FlaskForm):
+    choose_trip = SelectField('Выберите путевку')
+    choose_group = SelectField('Выберите группу')

@@ -88,8 +88,8 @@ class DBInterface():
                 cur = con.cursor()
 
                 cur.execute('UPDATE "user" SET is_banned = TRUE'
-                                  ' WHERE id = %s',
-                                  [user_id])
+                            ' WHERE id = %s',
+                            [user_id])
                 print('Пользователь забанен')
         except:
             print('Не удалось забанить пользователя')
@@ -103,8 +103,8 @@ class DBInterface():
                 cur = con.cursor()
 
                 cur.execute('UPDATE "user" SET is_banned = FALSE'
-                                  ' WHERE id = %s',
-                                  [user_id])
+                            ' WHERE id = %s',
+                            [user_id])
 
                 print('Пользователь разбанен')
         except:
@@ -476,7 +476,7 @@ class DBInterface():
             cur = con.cursor()
 
             user_client = cur.execute('SELECT * FROM client WHERE user_id = %s',
-                                          [current_user.id]).fetchone()
+                                      [current_user.id]).fetchone()
 
             res = cur.execute('SELECT trip.id, trip_number'
                               ' FROM trip INNER JOIN route ON trip.group_id = route.id'
@@ -626,7 +626,7 @@ class DBInterface():
 
             try:
                 cur.execute('DELETE FROM excursion_in_trip WHERE trip_id = %s',
-                              [trip_id])
+                            [trip_id])
                 print('Экскурсии в путевке удалены')
             except:
                 print('Экскурсии в путевке не найдены')
@@ -665,3 +665,49 @@ class DBInterface():
             print('Группа добавлена')
             return True
 
+    def getTrips(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT id, trip_number FROM trip').fetchall()
+
+        if not res:
+            print('Путевки не найдены')
+            return None
+        return res
+
+    def getGroups(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT id, group_number FROM tourist_group').fetchall()
+
+        if not res:
+            print('Группы не найдены')
+            return None
+        return res
+
+    def changeTripGroup(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('UPDATE trip SET group_id = %s WHERE id = %s',
+                        [
+                            request.form['choose_group'],
+                            request.form['choose_trip']
+                        ])
+
+            cur.execute('DELETE FROM excursion_in_trip WHERE trip_id = %s',
+                        [request.form['choose_trip']])
+            cur.execute('DELETE FROM hotel_in_trip WHERE trip_id = %s',
+                        [request.form['choose_trip']])
+            print('Группа обновлена')
