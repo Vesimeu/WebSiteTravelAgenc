@@ -15,6 +15,10 @@
                             <h5 class="card-title"> Путевка № {{ contract_trips[i][1] }}</h5>
                             <p class="card-text"> Стоимость: {{ contract_trips[i][2] }} <br> Маршрут: {{ contract_trips[i][7] }}  </p>
                             <a href="{{'/contract/' + contract[0]|string + '/trip/' + contract_trips[i][0]|string }}" class="btn btn-outline-info">Подробнее</a>
+                                <form action="{{ url_for('delete_trip', trip_id=contract_trips[i][0], contract_id=contract[0]) }}" method=post>
+                                    <br>
+                                    <input class="btn btn-outline-info" type="submit" value="Отменить">
+                                </form>
                         </div>
                     </div>                   
                 </div>

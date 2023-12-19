@@ -15,7 +15,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT login, password FROM "user" WHERE id = %s',
+            cur.execute('SELECT login, password, role FROM "user" WHERE id = %s',
                         [user_id])
 
             result = cur.fetchone()
@@ -32,7 +32,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT ID, login, password FROM "user" WHERE login = %s',
+            cur.execute('SELECT ID, login, password, role FROM "user" WHERE login = %s',
                         [login])
 
             result = cur.fetchone()
@@ -63,13 +63,12 @@ class DBInterface():
                 'login,'
                 'email,'
                 'password,'
-                'region_code,'
-                'want_spam) VALUES (%s, %s, %s, %s, %s)',
+                'role,'
+                'is_banned) VALUES (%s, %s, %s, 2, False)',
                 [
                     request.form['username'],
                     request.form['email'],
-                    password_hash, request.form['region_code'],
-                    request.form['want_spam']
+                    password_hash
                 ]
             )
 
@@ -553,3 +552,29 @@ class DBInterface():
             print('Отели с таким id не найдены')
             return None
         return res
+
+    def deleteTripByID(self, trip_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            try:
+                cur.execute('DELETE FROM excursion_in_trip WHERE trip_id = %s',
+                              [trip_id])
+                print('Экскурсии в путевке удалены')
+            except:
+                print('Экскурсии в путевке не найдены')
+
+            try:
+                cur.execute('DELETE FROM hotel_in_trip WHERE trip_id = %s', [trip_id])
+                print('Отели в путевке удалены')
+            except:
+                print('Отели в путевке не найдены')
+
+            try:
+                cur.execute('DELETE FROM trip WHERE id = %s', [trip_id])
+                print('Путевка удалена')
+            except:
+                print('Ошибка удаления путевки')

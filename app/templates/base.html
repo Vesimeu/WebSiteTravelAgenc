@@ -29,6 +29,9 @@
                     {% else %}
                         <a class="btn btn-outline-info" href="/login" role="button" style = "position:absolute; right:50px;">Войти</a>
                     {% endif %}
+                    {% if current_user.role == 1 %}
+                    {{ render_nav_item('admin', 'Панель администратора') }}
+                    {% endif %}
                 </div>
             </div>
         </nav>

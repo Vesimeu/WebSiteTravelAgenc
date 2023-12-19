@@ -24,8 +24,8 @@ def login():
             flash('Неверное имя пользователя или пароль', 'error')
             return redirect(url_for('login'))
 
-        id, login, password = res
-        user = User(id, login, password)
+        id, login, password, role = res
+        user = User(id, login, password, role)
         login_user(user, remember=login_form.remember_me.data)
         flash(f'Вы успешно авторизованы, {current_user.login}', 'success')
 
@@ -119,14 +119,17 @@ def view_contract(contract_id):
     return render_template('trips.html', contract=contract, contract_trips=contract_trips)
 
 
+@app.route('/contract/<int:contract_id>/delete_trip/<trip_id>', methods=['POST'])
+def delete_trip(trip_id, contract_id):
+    db.deleteTripByID(trip_id)
+    return redirect(url_for('view_contract', contract_id=contract_id))
+
+
 @app.route('/contract/<int:contract_id>/trip/<int:trip_id>')
 def view_trip(contract_id, trip_id):
     excursions = db.getExcursionInTripWithJoinsByID(trip_id)
     hotels = db.getHotelInTripWithJoinsByID(trip_id)
     trip = db.getTripByID(trip_id)
-
-    print(hotels)
-    print(excursions)
 
     return render_template('trip.html', excursions=excursions, hotels=hotels, trip=trip)
 
@@ -200,3 +203,8 @@ def view_station(route_id, station_id):
 
     return render_template('station.html', station=station, hotels=hotels,
                            excursions=excursions_id_name, hotel_form=hotel_form, excursion_form=excursion_form)
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    return render_template('admin.html')

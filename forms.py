@@ -13,7 +13,6 @@ class RegistrationForm(FlaskForm):
     ])
 
     confirm = PasswordField('Повторите пароль')
-    region_code = IntegerField('Код региона', [validators.InputRequired()])
     want_spam = BooleanField('Я согласен получать рекламную рассылку', [validators.InputRequired()])
 
 
