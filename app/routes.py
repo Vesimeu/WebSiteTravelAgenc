@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
 from forms import (RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm,
-                   BanUserForm, UnbanUserForm)
+                   BanUserForm, UnbanUserForm, GroupForm)
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -217,9 +217,13 @@ def admin():
         return redirect(url_for('index'))
 
     users = db.getUsers()
+    routes = db.getRoutesIDName()
 
+    group_form = GroupForm()
     ban_form = BanUserForm()
     unban_form = UnbanUserForm()
+
+    print(users)
 
     if users:
         ban_form.choose_user.choices = users
@@ -227,6 +231,14 @@ def admin():
     else:
         ban_form.choose_user.choices = [0, 'null']
         unban_form.choose_login.choices = [0, 'null']
+    if routes:
+        group_form.choose_route.choices = routes
+    else:
+        group_form.choose_route.choices = [0, 'null']
+
+    if group_form.validate_on_submit():
+        db.addGroup(request)
+        flash('Группа добавлена', 'success')
 
     if ban_form.validate_on_submit():
         db.banUser(request.form['choose_user'])
@@ -236,4 +248,5 @@ def admin():
         db.unbanUser(request.form['choose_login'])
         flash('Пользователь разбанен', 'success')
 
-    return render_template('admin.html', ban_form=ban_form, unban_form=unban_form)
+    return render_template('admin.html', ban_form=ban_form, unban_form=unban_form,
+                           group_form=group_form)

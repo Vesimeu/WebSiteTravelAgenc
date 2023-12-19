@@ -78,29 +78,37 @@ class DBInterface():
         return True
 
     def banUser(self, user_id):
-        with psycopg.connect(host=Config.DB_SERVER,
-                             user=Config.DB_USER,
-                             password=Config.DB_PASSWORD,
-                             dbname=Config.DB_NAME) as con:
-            cur = con.cursor()
 
-            cur.execute('UPDATE "user" SET is_banned = TRUE'
-                              ' WHERE id = %s',
-                              [user_id])
-            print('Пользователь забанен')
+        try:
+
+            with psycopg.connect(host=Config.DB_SERVER,
+                                 user=Config.DB_USER,
+                                 password=Config.DB_PASSWORD,
+                                 dbname=Config.DB_NAME) as con:
+                cur = con.cursor()
+
+                cur.execute('UPDATE "user" SET is_banned = TRUE'
+                                  ' WHERE id = %s',
+                                  [user_id])
+                print('Пользователь забанен')
+        except:
+            print('Не удалось забанить пользователя')
 
     def unbanUser(self, user_id):
-        with psycopg.connect(host=Config.DB_SERVER,
-                             user=Config.DB_USER,
-                             password=Config.DB_PASSWORD,
-                             dbname=Config.DB_NAME) as con:
-            cur = con.cursor()
+        try:
+            with psycopg.connect(host=Config.DB_SERVER,
+                                 user=Config.DB_USER,
+                                 password=Config.DB_PASSWORD,
+                                 dbname=Config.DB_NAME) as con:
+                cur = con.cursor()
 
-            cur.execute('UPDATE "user" SET is_banned = FALSE'
-                              ' WHERE id = %s',
-                              [user_id])
+                cur.execute('UPDATE "user" SET is_banned = FALSE'
+                                  ' WHERE id = %s',
+                                  [user_id])
 
-            print('Пользователь разбанен')
+                print('Пользователь разбанен')
+        except:
+            print('Не удалось разбанить пользователя')
 
     def getCurrUserClient(self):
         with psycopg.connect(host=Config.DB_SERVER,
@@ -194,6 +202,19 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
             res = cur.execute('SELECT * FROM route').fetchall()
+
+        if not res:
+            print('Туры не найдены')
+            return None
+        return res
+
+    def getRoutesIDName(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            res = cur.execute('SELECT id, name FROM route').fetchall()
 
         if not res:
             print('Туры не найдены')
@@ -621,3 +642,26 @@ class DBInterface():
                 print('Путевка удалена')
             except:
                 print('Ошибка удаления путевки')
+
+    def addGroup(self, request):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            group_number = randint(10000, 90000)
+
+            cur.execute('INSERT INTO tourist_group('
+                        'group_number,'
+                        'travel_date,'
+                        'route_id) VALUES (%s, %s, %s)',
+                        [
+                            group_number,
+                            request.form['travel_date'],
+                            request.form['choose_route']
+                        ]
+                        )
+            print('Группа добавлена')
+            return True
+

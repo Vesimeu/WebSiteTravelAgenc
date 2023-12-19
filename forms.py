@@ -13,7 +13,6 @@ class RegistrationForm(FlaskForm):
     ])
 
     confirm = PasswordField('Повторите пароль')
-    want_spam = BooleanField('Я согласен получать рекламную рассылку', [validators.InputRequired()])
 
 
 class LoginForm(FlaskForm):
@@ -58,3 +57,8 @@ class BanUserForm(FlaskForm):
 
 class UnbanUserForm(FlaskForm):
     choose_login = SelectField('Выберите логин пользователя')
+
+
+class GroupForm(FlaskForm):
+    choose_route = SelectField('Выберите тур для группы', [validators.InputRequired()])
+    travel_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])

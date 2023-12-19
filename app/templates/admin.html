@@ -52,4 +52,29 @@
         </div>
       </div>
     </div>
+
+    <a class="btn btn-outline-info" role="button" data-bs-toggle="modal" style="position: absolute; left: 53%; top: 20%;" 
+    data-bs-target="#createGroup" data-bs-whatever="@getbootstrap">Создать группу</a>
+    <div class="modal fade" id="createGroup" tabindex="-1" aria-labelledby="createGroupLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createGroupLabel">Создать группу</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="">
+                {{ group_form.hidden_tag() }}
+                {{ render_field(group_form.travel_date)}}
+                {{ render_field(group_form.choose_route) }}
+                <br>
+                <input class="btn btn-outline-info" type="submit" value="Создать"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
