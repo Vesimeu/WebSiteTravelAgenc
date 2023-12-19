@@ -1,7 +1,55 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
 
 {% block content %}
     <center>
         <p class="display-6">Панель администратора</p>
     </center>
+    <a class="btn btn-outline-danger" role="button" data-bs-toggle="modal" style="position: absolute; left: 27%; top: 20%;" 
+    data-bs-target="#ban" data-bs-whatever="@getbootstrap">Забанить пользователя</a>
+    <div class="modal fade" id="ban" tabindex="-1" aria-labelledby="banlabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="banlabel">Забанить пользователя</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="">
+                {{ ban_form.hidden_tag() }}
+                {{ render_field(ban_form.choose_user) }}
+                <br>
+                <input class="btn btn-outline-danger" type="submit" value="Забанить"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a class="btn btn-outline-success" role="button" data-bs-toggle="modal" style="position: absolute; left: 40%; top: 20%;" 
+    data-bs-target="#unban" data-bs-whatever="@getbootstrap">Разбанить пользователя</a>
+    <div class="modal fade" id="unban" tabindex="-1" aria-labelledby="unbanlabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="unbanlabel">Разбанить пользователя</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="">
+                {{ unban_form.hidden_tag() }}
+                {{ render_field(unban_form.choose_login) }}
+                <br>
+                <input class="btn btn-outline-success" type="submit" value="Разбанить"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}

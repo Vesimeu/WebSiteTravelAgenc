@@ -32,7 +32,7 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            cur.execute('SELECT ID, login, password, role FROM "user" WHERE login = %s',
+            cur.execute('SELECT ID, login, password, role, is_banned FROM "user" WHERE login = %s',
                         [login])
 
             result = cur.fetchone()
@@ -77,6 +77,31 @@ class DBInterface():
             print("Пользователь успешно зарегистрирован")
         return True
 
+    def banUser(self, user_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('UPDATE "user" SET is_banned = TRUE'
+                              ' WHERE id = %s',
+                              [user_id])
+            print('Пользователь забанен')
+
+    def unbanUser(self, user_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('UPDATE "user" SET is_banned = FALSE'
+                              ' WHERE id = %s',
+                              [user_id])
+
+            print('Пользователь разбанен')
+
     def getCurrUserClient(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -92,6 +117,20 @@ class DBInterface():
                 return None
 
         return user_client
+
+    def getUsers(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            res = cur.execute('SELECT id, login FROM "user"'
+                              'WHERE role = 2').fetchall()
+
+        if not res:
+            print('Пользователи не найдены')
+            return None
+        return res
 
     def addClient(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
@@ -415,9 +454,13 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
+            user_client = cur.execute('SELECT * FROM client WHERE user_id = %s',
+                                          [current_user.id]).fetchone()
+
             res = cur.execute('SELECT trip.id, trip_number'
-                              ' FROM trip INNER JOIN route ON trip.group_id = route.id WHERE route.id = %s',
-                              [route_id]).fetchall()
+                              ' FROM trip INNER JOIN route ON trip.group_id = route.id'
+                              ' WHERE route.id = %s AND trip.client_id = %s',
+                              [route_id, user_client[0]]).fetchall()
 
         if not res:
             print('Путевки с таким route_id не найдены')

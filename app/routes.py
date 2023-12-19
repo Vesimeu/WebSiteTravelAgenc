@@ -1,7 +1,8 @@
 from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
-from forms import RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm
+from forms import (RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm,
+                   BanUserForm, UnbanUserForm)
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -18,13 +19,17 @@ def login():
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
-        res = db.getUserByLogin(request.form['username'])
+        user_result = db.getUserByLogin(request.form['username'])
 
-        if res is None or not check_password_hash(res[2], request.form['password']):
+        if user_result is None or not check_password_hash(user_result[2], request.form['password']):
             flash('Неверное имя пользователя или пароль', 'error')
             return redirect(url_for('login'))
 
-        id, login, password, role = res
+        id, login, password, role, is_banned = user_result
+        if user_result[4]:
+            flash('Данный пользователь заблокирован администратором', 'error')
+            return redirect(url_for('login'))
+
         user = User(id, login, password, role)
         login_user(user, remember=login_form.remember_me.data)
         flash(f'Вы успешно авторизованы, {current_user.login}', 'success')
@@ -207,4 +212,28 @@ def view_station(route_id, station_id):
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    return render_template('admin.html')
+    if current_user.role != 1:
+        flash('Вы не являетесь администратором', 'danger')
+        return redirect(url_for('index'))
+
+    users = db.getUsers()
+
+    ban_form = BanUserForm()
+    unban_form = UnbanUserForm()
+
+    if users:
+        ban_form.choose_user.choices = users
+        unban_form.choose_login.choices = users
+    else:
+        ban_form.choose_user.choices = [0, 'null']
+        unban_form.choose_login.choices = [0, 'null']
+
+    if ban_form.validate_on_submit():
+        db.banUser(request.form['choose_user'])
+        flash('Пользователь забанен', 'success')
+
+    if unban_form.validate_on_submit():
+        db.unbanUser(request.form['choose_login'])
+        flash('Пользователь разбанен', 'success')
+
+    return render_template('admin.html', ban_form=ban_form, unban_form=unban_form)

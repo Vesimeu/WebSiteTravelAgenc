@@ -50,3 +50,11 @@ class HotelForm(FlaskForm):
 class ExcursionForm(FlaskForm):
     choose_trip = SelectField('Выберите номер путевки')
     choose_excursion = SelectField('Выберите экскурсию')
+
+
+class BanUserForm(FlaskForm):
+    choose_user = SelectField('Выберите логин пользователя')
+
+
+class UnbanUserForm(FlaskForm):
+    choose_login = SelectField('Выберите логин пользователя')
