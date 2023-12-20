@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
 from forms import (RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm,
-                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom, RouteForm)
+                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom, RouteForm, StationForm)
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -152,6 +152,7 @@ def view_route(route_id):
     route = db.getRouteByID(route_id)
     stations = db.getStationsByRouteID(route_id)
     contracts_res = db.getСurrClientContractsIDNumber()
+    countries = db.getCountries()
 
     if not contracts_res and current_user.is_authenticated:
         flash('Для бронирования путевки необходимо заключить договор', 'danger')
@@ -160,17 +161,29 @@ def view_route(route_id):
     trip_form = TripForm()
     trip_form.choose_contract.choices = contracts_res
 
+    station_form = StationForm()
+    if countries:
+        station_form.country.choices = countries
+    else:
+        station_form.country.choices = [0, 'null']
+
+    if station_form.validate_on_submit():
+        if db.addStation(request, route_id):
+            flash('Пункт назначения добавлен', 'success')
+            return redirect(url_for('view_route', route_id=route_id))
+
     if trip_form.validate_on_submit():
         db.addClientTrip(request, route_id)
         flash('Путевка успешно забронирована', 'success')
 
     return render_template('route.html', titile='Просмотр тура',
-                           route=route, stations=stations, form=trip_form)
+                           route=route, stations=stations, form=trip_form, station_form=station_form)
 
 
 @app.route('/route/<int:route_id>/station/<int:station_id>', methods=['GET', 'POST'])
 def view_station(route_id, station_id):
     client = db.getCurrUserClient()
+
     if not client:
         flash('Для конфигурирования путевки необходимо заполнить профиль', 'danger')
         return redirect(url_for('profile'))
@@ -216,6 +229,13 @@ def view_station(route_id, station_id):
 
     return render_template('station.html', station=station, hotels=hotels,
                            excursions=excursions_id_name, hotel_form=hotel_form, excursion_form=excursion_form)
+
+
+@app.route('/route/<int:route_id>/delete_station/<station_id>', methods=['POST'])
+def delete_station(route_id, station_id):
+    db.deleteStationByID(station_id)
+
+    return redirect(url_for('view_route', route_id=route_id))
 
 
 @app.route('/admin', methods=['GET', 'POST'])

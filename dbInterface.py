@@ -744,8 +744,6 @@ class DBInterface():
                                            request.form['name'],
                                            request.form['start_date']
                                        ]).fetchone()
-                print(route_id[0])
-
 
                 print('Тур добавлен')
 
@@ -755,3 +753,79 @@ class DBInterface():
         except:
                 print('Тур не добавлен')
                 return False
+
+    def addStation(self, request, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('INSERT INTO city('
+                        'country_id,'
+                        'name) VALUES (%s, %s)',
+                        [
+                            request.form['country'],
+                            request.form['name']
+                        ]
+                        )
+
+            city_id = cur.execute('SELECT id FROM city WHERE country_id = %s AND name = %s',
+                                  [
+                                      request.form['country'],
+                                      request.form['name']
+                                  ]).fetchone()
+
+            station_number = randint(10000, 90000)
+
+            cur.execute('INSERT INTO station('
+                        'station_number,'
+                        'route_id,'
+                        'duration,'
+                        'city_id) VALUES (%s, %s, %s, %s)',
+                        [
+                            station_number,
+                            route_id,
+                            request.form['duration'],
+                            city_id[0]
+                        ]
+                        )
+
+            # TODO: increase duration in route
+
+            print('Группа добавлена')
+            return True
+
+    def getCountries(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            res = cur.execute('SELECT id, name FROM country').fetchall()
+
+        if not res:
+            print('Группы не найдены')
+            return None
+        return res
+
+    def deleteStationByID(self, station_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            try:
+                cur.execute('DELETE FROM station WHERE id = %s',
+                            [station_id])
+
+                station = self.getStationByID(station_id)
+
+                cur.execute('DELETE FROM city WHERE id = %s', [station[4]])
+
+                print('Станция в маршруте удалена')
+            except:
+                print('Экскурсия в маршруте удалена')
+

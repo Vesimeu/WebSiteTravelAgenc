@@ -76,3 +76,9 @@ class RouteForm(FlaskForm):
     duration = IntegerField('Длительность', [validators.InputRequired()])
     start_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])
     end_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])
+
+
+class StationForm(FlaskForm):
+    name = StringField('Название пункта назначения', [validators.InputRequired()])
+    duration = IntegerField('Длительность', [validators.InputRequired()])
+    country = SelectField('Выберите страну')
