@@ -1,9 +1,15 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
 
 {% block content %}
     <center>
         <p class="display-6">{{ title }}</p>
     </center>
+    {% if current_user.role == 1 %}
+    <a class="btn btn-outline-info" role="button" data-bs-toggle="modal" style="position: absolute; right: 35%; top: 7%;" 
+    data-bs-target="#addRoute" data-bs-whatever="@getbootstrap">Добавить тур</a>
+    {% endif %}
+
     <div class="container" style="max-width: 1000px;">
         <div class="row row-cols-1 row-cols-md-3 g-4">
             {% if routes|length == 0 %}
@@ -24,5 +30,31 @@
                 {% endfor %}
             {% endif %}
         </div>
+    </div>
+
+    <div class="modal fade" id="addRoute" tabindex="-1" aria-labelledby="addRoutelabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addRoutelabel">Добавить тур</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="">
+                {{ route_form.hidden_tag() }}
+                {{ render_field(route_form.name)}}
+                {{ render_field(route_form.price) }}
+                {{ render_field(route_form.duration) }}
+                {{ render_field(route_form.start_date) }}
+                {{ render_field(route_form.end_date) }}
+                <br>
+                <input class="btn btn-outline-info" type="submit" value="Добавить"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
     </div>
 {% endblock %}

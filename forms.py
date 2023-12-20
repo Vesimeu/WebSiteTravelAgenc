@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import (BooleanField, StringField, DateField, IntegerField, PasswordField, SelectField, validators)
+from wtforms import (BooleanField, StringField, DateField, IntegerField, PasswordField, SelectField, validators,
+                     DecimalField)
 
 
 class RegistrationForm(FlaskForm):
@@ -67,3 +68,11 @@ class GroupForm(FlaskForm):
 class AddGropToTripFrom(FlaskForm):
     choose_trip = SelectField('Выберите путевку')
     choose_group = SelectField('Выберите группу')
+
+
+class RouteForm(FlaskForm):
+    name = StringField('Название тура', [validators.InputRequired()])
+    price = DecimalField('Стоимость', [validators.InputRequired()])
+    duration = IntegerField('Длительность', [validators.InputRequired()])
+    start_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])
+    end_date = DateField('Дата поездки', format='%Y-%m-%d', validators=[validators.InputRequired()])

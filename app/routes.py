@@ -2,16 +2,24 @@ from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
 from forms import (RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm,
-                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom)
+                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom, RouteForm)
 from user import User
 from werkzeug.security import check_password_hash
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     routes = db.getRoutes()
+    route_form = RouteForm()
 
-    return render_template('index.html', routes=routes, title='Доступные туры')
+    if route_form.is_submitted():
+        if db.addRoute(request):
+            flash('Тур успешно добавлен', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Ошибка при добавлнеии тура', 'danger')
+
+    return render_template('index.html', routes=routes, title='Доступные туры', route_form=route_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -249,7 +257,7 @@ def admin():
         group_trip_form.choose_group.choices = [0, 'null']
 
     if group_form.validate_on_submit():
-        db.addGroup(request)
+        db.addGroup(request.form['travel_date'], request.form['choose_route'])
         flash('Группа добавлена', 'success')
 
     if ban_form.validate_on_submit():

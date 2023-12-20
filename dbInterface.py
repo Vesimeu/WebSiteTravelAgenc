@@ -643,7 +643,7 @@ class DBInterface():
             except:
                 print('Ошибка удаления путевки')
 
-    def addGroup(self, request):
+    def addGroup(self, travel_date, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
@@ -658,8 +658,8 @@ class DBInterface():
                         'route_id) VALUES (%s, %s, %s)',
                         [
                             group_number,
-                            request.form['travel_date'],
-                            request.form['choose_route']
+                            travel_date,
+                            route_id
                         ]
                         )
             print('Группа добавлена')
@@ -711,3 +711,47 @@ class DBInterface():
             cur.execute('DELETE FROM hotel_in_trip WHERE trip_id = %s',
                         [request.form['choose_trip']])
             print('Группа обновлена')
+
+    def addRoute(self, request):
+
+        try:
+            with psycopg.connect(host=Config.DB_SERVER,
+                                 user=Config.DB_USER,
+                                 password=Config.DB_PASSWORD,
+                                 dbname=Config.DB_NAME) as con:
+                cur = con.cursor()
+
+                group_number = randint(10000, 90000)
+
+                cur.execute('INSERT INTO route('
+                            'name,'
+                            'price,'
+                            'duration,'
+                            'start_date,'
+                            'end_date) VALUES (%s, %s, %s, %s, %s)',
+                            [
+                                request.form['name'],
+                                request.form['price'],
+                                request.form['duration'],
+                                request.form['start_date'],
+                                request.form['end_date']
+                            ]
+                            )
+
+                route_id = cur.execute('SELECT id FROM route '
+                                       'WHERE name = %s AND start_date = %s',
+                                       [
+                                           request.form['name'],
+                                           request.form['start_date']
+                                       ]).fetchone()
+                print(route_id[0])
+
+
+                print('Тур добавлен')
+
+            self.addGroup(request.form['start_date'], route_id[0])
+            return True
+
+        except:
+                print('Тур не добавлен')
+                return False
