@@ -25,6 +25,17 @@ Travel agency website to learn web development on python.
 2. Install requirements.txt
 
 ### Preview
+Main page
 <p align="center">
   <img src="/images/mainPage.png" />
+</p>
+
+View route page
+<p align="center">
+  <img src="/images/viewRoute.png" />
+</p>
+
+Configure station page
+<p align="center">
+  <img src="/images/configureStation.png" />
 </p>
