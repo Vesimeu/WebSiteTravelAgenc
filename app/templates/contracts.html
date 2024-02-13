@@ -10,6 +10,7 @@
 		<button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Новый договор</button>
 	</div>
     {% if contracts %}
+    <!-- вывод договоров -->
     <div class="container" style="max-width: 1000px;">
         <div class="row row-cols-1 row-cols-md-3 g-4">
             {% for i in range(0, contracts|length) %}
@@ -30,7 +31,7 @@
         <center><p class="lead">Договоров не найдено.</p></center>
     {% endif %}
 
-	<!-- modal window -->
+	<!-- модальное окно добавления договора -->
 	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">

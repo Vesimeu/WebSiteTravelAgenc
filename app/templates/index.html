@@ -16,6 +16,7 @@
                 <p class="display-6">Маршрутов не найдено.</p>
             {% else %}
                 {% for i in range(0, routes|length) %}
+                   <!-- вывод  туров -->
                     <div class="col">
                         <div class="card" style="width: 20rem;">
                           <img src="{{ url_for('static', filename='img/' + routes[i][1] + '.jpeg') }}" class="card-img-top" 
@@ -41,6 +42,7 @@
           </div>
           <div class="modal-body">
             <form method="POST" action="">
+               <!-- форма -->
                 {{ route_form.hidden_tag() }}
                 {{ render_field(route_form.name)}}
                 {{ render_field(route_form.price) }}

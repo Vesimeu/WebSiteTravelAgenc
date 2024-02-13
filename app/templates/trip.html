@@ -6,6 +6,7 @@
 	<br>
     <p class="display-6" style="position: absolute; left: 20%; top: 13%;">Отели</p>
 	{% if hotels %}
+	<!-- вывод отелей -->
 		<div class="container" style="max-width: 800px; position: absolute; right: 50%; left: 5%; top: 20%">
 			<div class="row row-cols-1 row-cols-md-3 g-4">
 				{% for i in range(0, hotels|length) %}
@@ -29,6 +30,7 @@
 
 	<p class="display-6" style="position: absolute; right: 20%; top: 13%;">Экскурсии</p>
 	{% if excursions %}
+	<!-- вывод экскурсий -->
 		<div class="container" style="max-width: 800px; position: absolute; right: 5%; left: 50%; top: 20%;">
 			<div class="row row-cols-1 row-cols-md-3 g-4">
 				{% for i in range(0, excursions|length) %}

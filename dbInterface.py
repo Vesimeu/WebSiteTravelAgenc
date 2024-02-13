@@ -7,24 +7,32 @@ from config import Config
 from random import randint
 
 
+# Класс для взаимодействия с базой данных
 class DBInterface():
+    # Получить данные пользователя по id
     def getUserLogPassByID(self, user_id):
+        # Подключение к бд
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
+            # Объявление курсора
             cur = con.cursor()
 
+            # Исполнение запроса
             cur.execute('SELECT login, password, role FROM "user" WHERE id = %s',
                         [user_id])
 
+            # Получение результата
             result = cur.fetchone()
 
+            # Возврат ответа
             if not result:
                 print('Пользователь не найден')
                 return None
             return result
 
+    # получить данные пользователя по логину
     def getUserByLogin(self, login):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -42,6 +50,7 @@ class DBInterface():
                 return None
             return result
 
+    # Добавить пользователя
     def addUser(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -77,6 +86,7 @@ class DBInterface():
             print("Пользователь успешно зарегистрирован")
         return True
 
+    # забанить пользователя
     def banUser(self, user_id):
 
         try:
@@ -94,6 +104,7 @@ class DBInterface():
         except:
             print('Не удалось забанить пользователя')
 
+    # разбанить пользователя
     def unbanUser(self, user_id):
         try:
             with psycopg.connect(host=Config.DB_SERVER,
@@ -110,6 +121,7 @@ class DBInterface():
         except:
             print('Не удалось разбанить пользователя')
 
+    # получить данные клиента текущего пользователя
     def getCurrUserClient(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -126,6 +138,7 @@ class DBInterface():
 
         return user_client
 
+    # получить всех пользователей
     def getUsers(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -140,6 +153,7 @@ class DBInterface():
             return None
         return res
 
+    # добавить клиента
     def addClient(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -168,6 +182,7 @@ class DBInterface():
                         )
             print('Клиент добавлен')
 
+    # обновить клиента
     def updateClient(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -195,6 +210,7 @@ class DBInterface():
             print('Данные клиента обновлены')
             return True
 
+    # получить туры
     def getRoutes(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -208,6 +224,7 @@ class DBInterface():
             return None
         return res
 
+    # получить маршруты
     def getRoutesIDName(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -221,6 +238,7 @@ class DBInterface():
             return None
         return res
 
+    # получить путевки текущего клиента
     def getCurrClientTrips(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -241,6 +259,7 @@ class DBInterface():
             return None
         return res
 
+    # получить маршрут по id
     def getRouteByID(self, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -256,6 +275,7 @@ class DBInterface():
 
         return res
 
+    # пункты назначения по id маршрута
     def getStationsByRouteID(self, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -272,6 +292,7 @@ class DBInterface():
 
         return res
 
+    # получить пункт назначения по id
     def getStationByID(self, station_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -289,6 +310,7 @@ class DBInterface():
 
         return res
 
+    # получить отели по id города
     def getHotelsByCity(self, city_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -305,6 +327,7 @@ class DBInterface():
 
         return res
 
+    # получить договоры текущего клиента
     def getСurrClientContracts(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -325,6 +348,7 @@ class DBInterface():
             return None
         return res
 
+    # получить id номер договора текущего клиента
     def getСurrClientContractsIDNumber(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -345,6 +369,7 @@ class DBInterface():
             return None
         return res
 
+    # добавить договор клиента
     def addClientContract(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -376,6 +401,7 @@ class DBInterface():
 
             return True
 
+    # получить договор по id
     def getContractByID(self, contract_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -392,6 +418,7 @@ class DBInterface():
 
         return res
 
+    # получить путевки по id договора
     def getContractTrips(self, contract_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -399,7 +426,12 @@ class DBInterface():
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
 
-            res = cur.execute('SELECT * FROM trip INNER JOIN route ON trip.group_id = route.id WHERE contract_id = %s',
+            print(contract_id)
+
+            res = cur.execute('SELECT * FROM trip'
+                              ' INNER JOIN tourist_group ON trip.group_id = tourist_group.id'
+                              ' INNER JOIN route ON tourist_group.route_id = route.id'
+                              ' WHERE contract_id = %s',
                               [contract_id]).fetchall()
 
         if not res:
@@ -408,6 +440,7 @@ class DBInterface():
 
         return res
 
+    # добавить путевку клиента
     def addClientTrip(self, request, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -438,6 +471,7 @@ class DBInterface():
 
             return True
 
+    # получить группы по id маршрута
     def getTouristGroupByRouteID(self, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -453,6 +487,7 @@ class DBInterface():
             return None
         return res
 
+    # получить экскурсии по id города
     def getExcursionsIDNameByCityID(self, city_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -468,6 +503,7 @@ class DBInterface():
             return None
         return res
 
+    # получить путевки клиента по id тура
     def getClientTripsByRouteID(self, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -488,6 +524,7 @@ class DBInterface():
             return None
         return res
 
+    # добавить отель в путевку
     def addHotelInTrip(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -511,6 +548,7 @@ class DBInterface():
 
             return True
 
+    # добавить экскурсию в путевку
     def addExcursionInTrip(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -534,6 +572,7 @@ class DBInterface():
 
             return True
 
+    # получить экскурсии в путевке по id
     def getExcursionInTripByID(self, excursion_id, trip_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -550,6 +589,7 @@ class DBInterface():
             return None
         return res
 
+    # получить отель в путевке по id
     def getHotelInTripByID(self, trip_id, hotel_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -566,6 +606,7 @@ class DBInterface():
             return None
         return res
 
+    # получить экскурсии в путевке с соединениями по id
     def getExcursionInTripWithJoinsByID(self, trip_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -584,6 +625,7 @@ class DBInterface():
             return None
         return res
 
+    # получить отель в путевке с соединениями по id
     def getHotelInTripWithJoinsByID(self, trip_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -602,6 +644,7 @@ class DBInterface():
             return None
         return res
 
+    # получить путевку по id
     def getTripByID(self, trip_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -617,6 +660,7 @@ class DBInterface():
             return None
         return res
 
+    # удалить путевку по id
     def deleteTripByID(self, trip_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -643,6 +687,7 @@ class DBInterface():
             except:
                 print('Ошибка удаления путевки')
 
+    # добавить группу
     def addGroup(self, travel_date, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -665,6 +710,7 @@ class DBInterface():
             print('Группа добавлена')
             return True
 
+    # получить все путевки
     def getTrips(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -679,6 +725,7 @@ class DBInterface():
             return None
         return res
 
+    # получить все группы
     def getGroups(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -693,6 +740,7 @@ class DBInterface():
             return None
         return res
 
+    # поменять группу в путевке
     def changeTripGroup(self, request):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -712,6 +760,7 @@ class DBInterface():
                         [request.form['choose_trip']])
             print('Группа обновлена')
 
+    # добавить маршрут
     def addRoute(self, request):
 
         try:
@@ -751,9 +800,10 @@ class DBInterface():
             return True
 
         except:
-                print('Тур не добавлен')
-                return False
+            print('Тур не добавлен')
+            return False
 
+    # добавить пункт назначения
     def addStation(self, request, route_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -791,11 +841,17 @@ class DBInterface():
                         ]
                         )
 
-            # TODO: increase duration in route
+            duration = cur.execute('SELECT duration FROM route WHERE id = %s', [route_id]).fetchone()
+
+            res = int(request.form['duration']) + duration[0]
+
+            cur.execute('UPDATE route SET duration = %s WHERE id = %s',
+                        [res, route_id])
 
             print('Группа добавлена')
             return True
 
+    # получить все страны
     def getCountries(self):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -810,6 +866,7 @@ class DBInterface():
             return None
         return res
 
+    # удалить пункт назначения по id
     def deleteStationByID(self, station_id):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
@@ -828,4 +885,3 @@ class DBInterface():
                 print('Станция в маршруте удалена')
             except:
                 print('Экскурсия в маршруте удалена')
-

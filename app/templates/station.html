@@ -6,6 +6,7 @@
 	<br>
 	<p class="display-6" style="position: absolute; left: 20%; top: 13%;">Отели</p>
 	{% if hotels %}
+		<!-- вывод отелей -->
 		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" style="position: absolute; left: 27%; top: 14%;" 
 		data-bs-target="#hotelModal" data-bs-whatever="@getbootstrap">Выбрать отель</a>
         <p class="display-6" style="position: absolute; left: 20%; top: 13%;">Отели</p>
@@ -28,7 +29,7 @@
 	{% else %}
     	<p class="lead" style="position: absolute; left: 20%; top: 18%;">Отели не найдены</p>
 	{% endif %}
-	<!-- hotels modal window -->
+	<!-- модальное окно выбора отелей -->
 	<div class="modal fade" id="hotelModal" tabindex="-1" aria-labelledby="hotelModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
@@ -53,6 +54,7 @@
 	</div>
 
 	<p class="display-6" style="position: absolute; right: 20%; top: 13%;">Экскурсии</p>
+	<!-- вывод экскурсий -->
 	{% if excursions %}
 		<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" style="position: absolute; right: 10%; top: 14%;" 
 		data-bs-target="#excursionModal" data-bs-whatever="@getbootstrap">Выбрать экскурсии</a>
@@ -65,7 +67,6 @@
 		                  alt="Изображение не найдено" style="max-width: 70%">
 		                    <div class="card-body">
 		                        <h5 class="card-title"> {{ excursions[i][1] }} <br></h5>
-		                        <!-- <a href="/" class="btn btn-outline-info">Выбрать</a> -->
 		                    </div>
 		                </div>                   
 		            </div>
@@ -75,7 +76,7 @@
     {% else %}
     <p class="lead" style="position: absolute; right: 20%; top: 18%;">Экскурсии не найдены</p>
 	{% endif %}
-	<!-- hotels modal window -->
+	<!-- модальное окно экскурсий -->
 	<div class="modal fade" id="excursionModal" tabindex="-1" aria-labelledby="excursionModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">

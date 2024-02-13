@@ -10,6 +10,7 @@
     {% endif %}
 	<div class="container" style="max-width: 1000px; position:absolute; left: 7%;">
 		{% if route %}
+		<!-- вывод туров -->
 			<figure class="figure">
 				<img src="{{ url_for('static', filename='img/' + route[1] + '.jpeg') }}" 
 				class="figure-img img-fluid rounded" style="max-width:35%;" alt="Изображение не найдено">
@@ -26,7 +27,7 @@
 			<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Забронировать</a>
 		{% endif %}
 	</div>
-	<!-- modal window -->
+	<!-- модальное окно бронирования тура -->
 	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
@@ -49,6 +50,7 @@
 	  </div>
 	</div>
 	{% if stations %}
+	<!-- выбор пунктов назначения -->
 		<center>
         	<p class="lead" >Пункты назначения</p>
     	</center>
@@ -78,12 +80,12 @@
 	    	</div>
     	</div>
 	{% endif %}
-	<!-- for adding station -->
+	<!-- модальное окно добавления пункта назначения -->
 	  <div class="modal fade" id="addStation" tabindex="-1" aria-labelledby="addStationLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h1 class="modal-title fs-5" id="addStationLabel">Добавить тур</h1>
+	        <h1 class="modal-title fs-5" id="addStationLabel">Добавить пункт назначения</h1>
 	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
 	      </div>
 	      <div class="modal-body">
