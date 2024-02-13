@@ -20,9 +20,10 @@ Travel agency website to learn web development on python.
 • Adding new routes, route stations as admin \
 • Creating new groups as admin
 
-### How to setup project
+### How to setup and run project
 1. Import project in Pycharm
 2. Install requirements.txt
+3. Run start.bat
 
 ### Preview
 Main page
