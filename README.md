@@ -39,3 +39,13 @@ Configure station page
 <p align="center">
   <img src="/images/configureStation.png" />
 </p>
+
+Adding hotels modal window
+<p align="center">
+  <img src="/images/addHotels.png" />
+</p>
+
+Register page
+<p align="center">
+  <img src="/images/registerPage.png" />
+</p>
