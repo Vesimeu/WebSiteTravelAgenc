@@ -49,3 +49,13 @@ Register page
 <p align="center">
   <img src="/images/registerPage.png" />
 </p>
+
+Profile page
+<p align="center">
+  <img src="/images/profile.png" />
+</p>
+
+Trips page
+<p align="center">
+  <img src="/images/trips.png" />
+</p>
