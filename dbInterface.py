@@ -873,15 +873,10 @@ class DBInterface():
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
-
-            try:
-                cur.execute('DELETE FROM station WHERE id = %s',
-                            [station_id])
-
-                station = self.getStationByID(station_id)
-
+            station = self.getStationByID(station_id)
+            if station:
+                cur.execute('DELETE FROM station WHERE id = %s', [station_id])
                 cur.execute('DELETE FROM city WHERE id = %s', [station[4]])
-
-                print('Станция в маршруте удалена')
-            except:
-                print('Экскурсия в маршруте удалена')
+                print('Станция и город удалены')
+            else:
+                print('Станция не найдена')
