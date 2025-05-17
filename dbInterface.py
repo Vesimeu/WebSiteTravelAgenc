@@ -880,3 +880,90 @@ class DBInterface():
                 print('Станция и город удалены')
             else:
                 print('Станция не найдена')
+
+    def addReview(self, request, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            
+            # Проверяем, существует ли уже отзыв от этого пользователя
+            cur.execute('SELECT id FROM review WHERE user_id = %s AND route_id = %s',
+                        [current_user.id, route_id])
+            existing_review = cur.fetchone()
+            
+            if existing_review:
+                # Обновляем существующий отзыв
+                cur.execute('UPDATE review SET rating = %s, comment = %s, created_at = %s WHERE id = %s',
+                            [request.form['rating'], request.form['comment'], 
+                             datetime.datetime.now(), existing_review[0]])
+                print('Отзыв обновлен')
+            else:
+                # Создаем новый отзыв
+                cur.execute('INSERT INTO review('
+                            'user_id,'
+                            'route_id,'
+                            'rating,'
+                            'comment,'
+                            'created_at) VALUES (%s, %s, %s, %s, %s)',
+                            [
+                                current_user.id,
+                                route_id,
+                                request.form['rating'],
+                                request.form['comment'],
+                                datetime.datetime.now()
+                            ])
+                print('Отзыв добавлен')
+            con.commit()
+            return True
+
+    def getReviewsByRouteID(self, route_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            
+            cur.execute('SELECT r.*, u.login FROM review r '
+                        'JOIN "user" u ON r.user_id = u.id '
+                        'WHERE r.route_id = %s '
+                        'ORDER BY r.created_at DESC',
+                        [route_id])
+            
+            reviews = cur.fetchall()
+            return reviews
+
+    def deleteReview(self, review_id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            
+            cur.execute('DELETE FROM review WHERE id = %s',
+                        [review_id])
+            con.commit()
+            print('Отзыв удален')
+            return True
+
+    def createReviewsTable(self):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS review (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER REFERENCES "user"(id),
+                    route_id INTEGER REFERENCES route(id),
+                    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+                    comment TEXT,
+                    created_at TIMESTAMP,
+                    UNIQUE(user_id, route_id)
+                )
+            ''')
+            con.commit()
+            print('Таблица отзывов создана')

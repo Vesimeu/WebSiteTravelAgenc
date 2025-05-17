@@ -2,13 +2,85 @@
 {% from 'bootstrap5/form.html' import render_field %}
 
 {% block content %}
-	<p class="display-6" style="text-align: center;"> {{ titile }}</p>
+	<p class="display-6" style="text-align: center;"> {{ title }}</p>
 	<br>
 	{% if current_user.role == 1 %}
 	    <a class="btn btn-outline-info" role="button" data-bs-toggle="modal" style="position: absolute; right: 30%; top: 7%;" 
 	    data-bs-target="#addStation" data-bs-whatever="@getbootstrap">Добавить пункт назначения</a>
     {% endif %}
-	<div class="container" style="max-width: 1000px; position:absolute; left: 7%;">
+
+	<!-- Отзывы -->
+	<div class="container" style="max-width: 1000px; margin-top: 20px; margin-bottom: 40px;">
+		<h3 class="mb-4">Отзывы</h3>
+		
+		{% if current_user.is_authenticated %}
+		<button class="btn btn-outline-info mb-4" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+			Добавить отзыв
+		</button>
+		{% endif %}
+
+		{% if reviews %}
+			{% for review in reviews %}
+			<div class="card mb-3">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center">
+						<h5 class="card-title">{{ review[6] }}</h5>
+						<div class="text-warning">
+							{% for i in range(review[3]) %}
+							★
+							{% endfor %}
+							{% for i in range(5 - review[3]) %}
+							☆
+							{% endfor %}
+						</div>
+					</div>
+					<p class="card-text">{{ review[4] }}</p>
+					<small class="text-muted">{{ review[5] }}</small>
+					{% if current_user.is_authenticated and (current_user.id == review[1] or current_user.role == 1) %}
+					<div class="mt-2">
+						<button class="btn btn-outline-primary btn-sm me-2" 
+								data-bs-toggle="modal" 
+								data-bs-target="#editReviewModal{{ review[0] }}">
+							Редактировать
+						</button>
+						<form action="{{ url_for('delete_review', route_id=route[0], review_id=review[0]) }}" 
+							  method="post" 
+							  style="display: inline;">
+							<button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+						</form>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+
+			<!-- Модальное окно редактирования отзыва -->
+			{% if current_user.is_authenticated and (current_user.id == review[1] or current_user.role == 1) %}
+			<div class="modal fade" id="editReviewModal{{ review[0] }}" tabindex="-1" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Редактировать отзыв</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form method="POST" action="{{ url_for('add_review', route_id=route[0]) }}">
+								{{ review_form.hidden_tag() }}
+								{{ render_field(review_form.rating) }}
+								{{ render_field(review_form.comment) }}
+								<button type="submit" class="btn btn-outline-info">Сохранить изменения</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+			{% endfor %}
+		{% else %}
+			<p class="lead">Отзывов пока нет</p>
+		{% endif %}
+	</div>
+
+	<div class="container" style="max-width: 1000px;">
 		{% if route %}
 		<!-- вывод туров -->
 			<figure class="figure">
@@ -27,6 +99,27 @@
 			<a class="btn btn-outline-success" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Забронировать</a>
 		{% endif %}
 	</div>
+
+	<!-- Модальное окно добавления отзыва -->
+	<div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="addReviewModalLabel">Добавить отзыв</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form method="POST" action="{{ url_for('add_review', route_id=route[0]) }}">
+						{{ review_form.hidden_tag() }}
+						{{ render_field(review_form.rating) }}
+						{{ render_field(review_form.comment) }}
+						<button type="submit" class="btn btn-outline-info">Отправить</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- модальное окно бронирования тура -->
 	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
@@ -49,6 +142,7 @@
 	    </div>
 	  </div>
 	</div>
+
 	{% if stations %}
 	<!-- выбор пунктов назначения -->
 		<center>

@@ -7,6 +7,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 
 db = DBInterface()
+db.createReviewsTable()  # Создаем таблицу отзывов при запуске
 
 bootstrap = Bootstrap5(app)
 

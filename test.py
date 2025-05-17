@@ -4,7 +4,7 @@ users = [
     ('john_doe', 'password123'),
     ('jane_smith', 'password456'),
     ('admin', 'admin123'),
-    ('bob_wilson', 'password789')
+    ('bob_wilson', '123123')
 ]
 
 for login, password in users:

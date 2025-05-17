@@ -96,3 +96,9 @@ class StationForm(FlaskForm):
     name = StringField('Название пункта назначения', [validators.InputRequired()])
     duration = IntegerField('Длительность', [validators.InputRequired()])
     country = SelectField('Выберите страну')
+
+
+# Форма добавления отзыва
+class ReviewForm(FlaskForm):
+    rating = SelectField('Оценка', choices=[(str(i), str(i)) for i in range(1, 6)], validators=[validators.InputRequired()])
+    comment = StringField('Комментарий', [validators.InputRequired(), validators.Length(min=10, max=500)])

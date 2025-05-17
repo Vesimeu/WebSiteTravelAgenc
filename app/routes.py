@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, url_for, request, flash, redirect
 from flask_login import current_user, login_user, logout_user
 from forms import (RegistrationForm, LoginForm, EditProfileForm, ContractForm, TripForm, HotelForm, ExcursionForm,
-                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom, RouteForm, StationForm)
+                   BanUserForm, UnbanUserForm, GroupForm, AddGropToTripFrom, RouteForm, StationForm, ReviewForm)
 from user import User
 from werkzeug.security import check_password_hash
 
@@ -171,6 +171,7 @@ def view_route(route_id):
     stations = db.getStationsByRouteID(route_id)
     contracts_res = db.getСurrClientContractsIDNumber()
     countries = db.getCountries()
+    reviews = db.getReviewsByRouteID(route_id)
 
     if not contracts_res and current_user.is_authenticated:
         flash('Для бронирования путевки необходимо заключить договор', 'danger')
@@ -186,6 +187,8 @@ def view_route(route_id):
     else:
         station_form.country.choices = [0, 'null']
 
+    review_form = ReviewForm()
+
     if station_form.validate_on_submit():
         if db.addStation(request, route_id):
             flash('Пункт назначения добавлен', 'success')
@@ -195,8 +198,10 @@ def view_route(route_id):
         db.addClientTrip(request, route_id)
         flash('Путевка успешно забронирована', 'success')
 
-    return render_template('route.html', titile='Просмотр тура',
-                           route=route, stations=stations, form=trip_form, station_form=station_form)
+    return render_template('route.html', title='Просмотр тура',
+                           route=route, stations=stations, form=trip_form, 
+                           station_form=station_form, review_form=review_form,
+                           reviews=reviews)
 
 
 # Просмотр конкретного пункта назначения конкретного тура
@@ -322,3 +327,33 @@ def admin():
     # отображение страницы
     return render_template('admin.html', ban_form=ban_form, unban_form=unban_form,
                            group_form=group_form, group_trip_form=group_trip_form)
+
+
+# Добавление/редактирование отзыва
+@app.route('/route/<int:route_id>/add_review', methods=['POST'])
+def add_review(route_id):
+    if not current_user.is_authenticated:
+        flash('Для добавления отзыва необходимо авторизоваться', 'danger')
+        return redirect(url_for('login'))
+        
+    review_form = ReviewForm()
+    if review_form.validate_on_submit():
+        if db.addReview(request, route_id):
+            flash('Отзыв успешно сохранен', 'success')
+        else:
+            flash('Ошибка при сохранении отзыва', 'danger')
+    return redirect(url_for('view_route', route_id=route_id))
+
+
+# Удаление отзыва
+@app.route('/route/<int:route_id>/delete_review/<int:review_id>', methods=['POST'])
+def delete_review(route_id, review_id):
+    if not current_user.is_authenticated:
+        flash('Для удаления отзыва необходимо авторизоваться', 'danger')
+        return redirect(url_for('login'))
+        
+    if db.deleteReview(review_id):
+        flash('Отзыв успешно удален', 'success')
+    else:
+        flash('Ошибка при удалении отзыва', 'danger')
+    return redirect(url_for('view_route', route_id=route_id))
