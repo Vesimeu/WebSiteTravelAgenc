@@ -110,6 +110,9 @@ TravelAgencyWebsite/
 └── README.md
 ```
 
+##ERD диаграмма базы данных
+![image](https://github.com/user-attachments/assets/2dbbf834-bb8b-4e33-a991-93bbc5de8194)
+
 ## Роли пользователей
 
 1. Администратор (role = 1):
